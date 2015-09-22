@@ -120,6 +120,7 @@ var LoginView = Backbone.View.extend({
 
 // generic ctor to represent interface:
 function GUI(users,tasks,el) {
+
 	// users is collection of User models
 	// tasks is collection of Task models
 	// el is selector for where GUI connects in DOM
@@ -137,6 +138,13 @@ function GUI(users,tasks,el) {
 this.switchToLogin();
 
 	console.log( 'CONSTRUCTION gui\n===================');
+// =======
+//
+// 	var login = new LoginView();
+// 	login.render();
+// 	$("#app").append(login.$el);
+// 	console.log( 'CONSTRUCTION gui\n===================')
+// >>>>>>> TaskView
 
   // users is collection of User models: app.users
   //===================================
@@ -154,20 +162,19 @@ this.switchToLogin();
   // render each task and append them
   //===================================
 
+
+
   // tasks.each( function(task){
-  //
-  //   console.log('LOOP tasks.each!!\n=================\n the current task is =>', task);
-  //
-  //   console.log( 'task.title: "', task.get('title'), '"' );
-  //
-  //   var issue = new TaskView({ model : task });
-  //
-  //   console.log('renamed it issue: ', issue)
-  //   issue.render();
-  //
+
+    console.log('LOOP tasks.each!!\n=================\n the current task is =>', task);
+
+    console.log( 'task.title: "', task.get('title'), '"' );
+
+
+
+
+
   // })
-
-
 
 }
 return GUI;
