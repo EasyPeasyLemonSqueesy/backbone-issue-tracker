@@ -12,62 +12,81 @@ var UnassignedTasksView = Backbone.View.extend({
 	render: function() {
 		var header = '<h1>Unassigned Tasks View</h1>';
 		this.$el.html ( header );
-	}
+	},
+	delete: function() {
+			this.remove();
+		},
+		logout: function() {
+			console.log("logging out");
+			// unassigned.remove();
+			// usertasks.remove();
+			// this.delete(this.$el);
+			console.log();
+			this.render();
+		}
 });
 
 var UserTasksView = Backbone.View.extend({
 	render: function() {
 		var header = '<h1>User Tasks View</h1>';
 		this.$el.html ( header );
-	}
+	},
+	delete: function() {
+			this.remove();
+		},
+		logout: function() {
+			console.log("logging out");
+			// unassigned.remove();
+			// usertasks.remove();
+			// this.delete(this.$el);
+			console.log();
+			this.render();
+		}
 });
 
 var UserView = Backbone.View.extend({
-
+	render: function() {
+			this.remove();
+			var logout = '<button id = "logout">Log-Out</button>';
+			var header = '<h1>Welcome, '+app.currentUser+'!</h1>';
+			var userTasksViewHeader = '<h1>User Tasks View</h1>';
+			var new1 = new UserTasksView();
+			var userTasksView = new1.render();
+			var unassignedTasksViewHeader = '<h1>Unassigned Tasks View</h1>';
+			var new2 = new UnassignedTasksView();
+			var unassignedTasksView = new2.render();
+			var stuff = header + logout + userTasksViewHeader + userTasksView + unassignedTasksViewHeader + unassignedTasksView;
+			this.$el.html ( stuff );
+	},
+	events: {
+		"click #logout" : "logout"
+	},
+	logout: function() {
+		console.log("logging out");
+		this.$el.empty();
+		this.remove();
+		app.gui.switchToLogin();
+	}
 });
 
 var LoginView = Backbone.View.extend({
 	render: function() {
-		// this.remove();
 		var button = '<button id = "login">Login</button>';
 		console.log(app.users.pluck("username"));
 		var users = app.users.pluck("username");
-		// var logout = '<button id = "logout">Log-Out</button>';
 		var dropdown = '<select id = "dropdown">'
 		users.forEach(function(element){dropdown += "<option>"+element+"</option>";})
 		dropdown += ('</select>');
-
 		var title = '<h1>Please Choose A Username</h1>';
 		var all =  title + dropdown + button;
 		this.$el.html(  all );
-	},
-	rerender: function() {
-		console.log("re-rendering");
-
-		this.$el.empty();
-		// this.$el.append( this.subView.render().el );
-
-		var logout = '<button id = "logout">Log-Out</button>';
-
-		var header = '<h1>Welcome, '+this.currentUser+'!</h1>';
-		var stuff =  this.$el.html ( header + logout);
-		$('#app').append(stuff);
-		var unassigned = new UnassignedTasksView();
-		var usertasks = new UserTasksView();
-		unassigned.render();
-		usertasks.render();
-		$('#app').append(unassigned.$el);
-		$('#app').append(usertasks.$el);
-		// this.subView.delegateEvents();
-
-
 	},
 	delete: function() {
 			this.remove();
 	},
 	initialize: function() {
 		console.log("initializing");
-		this.on("logout", this.delete, this);
+		// this.on("logout", this.delete, this);
 
 	},
 	events: {
@@ -75,20 +94,16 @@ var LoginView = Backbone.View.extend({
 		"click #login" : "login"
 	},
 	login: function() {
-		this.currentUser = $('#dropdown').val();
-		// console.log(this.currentUser);
+		app.currentUser = $('#dropdown').val();
+		console.log(app.currentUser);
 		console.log("loging in");
-			// this.undelegateEvents();
-	    // this.$el.removeData().unbind();
-			// Backbone.View.prototype.remove.call(this);
-			this.rerender();
+			app.gui.switchToUser();
 	},
 	logout: function() {
 		console.log("logging out");
-		// unassigned.remove();
-		// usertasks.remove();
-		this.delete();
-		this.render();
+		this.$el.empty();
+		this.remove();
+		app.gui.switchToLogin();
 	}
 
 });
@@ -99,13 +114,18 @@ function GUI(users,tasks,el) {
 	// users is collection of User models
 	// tasks is collection of Task models
 	// el is selector for where GUI connects in DOM
-	var login = new LoginView();
-	login.render();
-	$("#app").append(login.$el);
-	// login.rerender();
-
-	//...
+	this.switchToUser = function (){
+		var userView = new UserView();
+		userView.render();
+		$('#app').append(userView.$el);
+	};
+	 this.switchToLogin = function() {
+		 var login = new LoginView();
+		 login.render();
+		 $("#app").append(login.$el);
+};
+	var currentUser = this.currentUser;
+this.switchToLogin();
 }
-
 return GUI;
-}());
+})();
