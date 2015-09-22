@@ -4,13 +4,13 @@ var TaskView = Backbone.View.extend({
   tagName: 'p',
   className: 'task',
   render: function(){
-    console.log('RENDER TaskView!!\n===================')
+    console.log('RENDER TaskView!!\n===================');
     console.log('the model im rendering is ', this.model.get('title'));
     var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status');
     this.$el.html(description);
   },
   initialize: function(){
-    $('#app').append(this.$el)
+    $('#app').append(this.$el);
   }
 });
 
@@ -90,15 +90,14 @@ var UserTasksView = Backbone.View.extend({
 
 var UserView = Backbone.View.extend({
 	render: function() {
-			this.remove();
 			var logout = '<button id = "logout">Log-Out</button>';
 			var header = '<h1>Welcome, '+app.currentUser+'!</h1>';
 			var userTasksViewHeader = '<h1>User Tasks View</h1>';
-			var new1 = new UserTasksView();
-			var userTasksView = new1.render();
+			var userTasksView = new UserTasksView();
+			userTasksView.render();
 			var unassignedTasksViewHeader = '<h1>Unassigned Tasks View</h1>';
-			var new2 = new UnassignedTasksView();
-			var unassignedTasksView = new2.render();
+			var unassignedTasksView = new UnassignedTasksView();
+			unassignedTasksView.render();
 			var stuff = header + logout + userTasksViewHeader + userTasksView + unassignedTasksViewHeader + unassignedTasksView;
 			this.$el.html ( stuff );
 	},
@@ -107,7 +106,7 @@ var UserView = Backbone.View.extend({
 	},
 	logout: function() {
 		console.log("logging out");
-		this.$el.empty();
+		// this.$el.empty();
 		this.remove();
 		app.gui.switchToLogin();
 	}
@@ -126,7 +125,7 @@ var LoginView = Backbone.View.extend({
 		this.$el.html(  all );
 	},
 	delete: function() {
-			this.remove();
+			this.$el.html('');
 	},
 	initialize: function() {
 		console.log("initializing");
@@ -141,6 +140,7 @@ var LoginView = Backbone.View.extend({
 		app.currentUser = $('#dropdown').val();
 		console.log(app.currentUser);
 		console.log("loging in");
+    this.remove();
 			app.gui.switchToUser();
 	},
 	logout: function() {
@@ -155,8 +155,6 @@ var LoginView = Backbone.View.extend({
 
 // generic ctor to represent interface:
 function GUI(users,tasks,el) {
-
-
 	// users is collection of User models
 	// tasks is collection of Task models
 	// el is selector for where GUI connects in DOM
@@ -173,11 +171,8 @@ function GUI(users,tasks,el) {
 	var currentUser = this.currentUser;
 this.switchToLogin();
 
-	console.log( 'CONSTRUCTION gui\n===================')
+	console.log( 'CONSTRUCTION gui\n===================');
 
-  var login = new LoginView();
-  login.render();
-  $(el).append(login.$el);
   // users is collection of User models: app.users
   //===================================
 
@@ -207,33 +202,9 @@ this.switchToLogin();
 
   })
 
-}
 
-
-  // el is selector for where GUI connects in DOM: #app
-  //===================================
-  console.log('GUI thinks el is ', el);
-
-
-
-  // render each task and append them
-  //===================================
-
-  tasks.each( function(task){
-
-    console.log('LOOP tasks.each!!\n=================\n the current task is =>', task);
-
-    console.log( 'task.title: "', task.get('title'), '"' );
-
-    var issue = new TaskView({ model : task });
-
-    console.log('renamed it issue: ', issue)
-    issue.render();
-
-  })
 
 }
 return GUI;
 
-}()
-);
+})();
