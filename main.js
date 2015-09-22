@@ -3,12 +3,12 @@ var app = {};
 $(function() { //when DOM is ready...
 	console.log("this is running");
 	app.users = new UserCollection([
-		{username:'Person1'},
-		{username:'Person2'},
-		{username:'Person3'}
+		{username:'Joseph'},
+		{username:'Nathaniel'},
+		{username:'Adam'}
 	]);
 
-	app.tasks = new TaskCollection([
+	app.tasks = new IssueCollection([
 		// test data here
 	]);
 
