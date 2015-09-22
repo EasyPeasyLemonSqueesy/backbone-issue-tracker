@@ -23,20 +23,37 @@ var UserView = Backbone.View.extend({
 var LoginView = Backbone.View.extend({
 	render: function() {
 		var button = '<button id = "login">Login</button>';
-		var dropdown = '<select id = "dropdown></select>';
-		var title = '<h1>EZPZLemonSQZ</h1>';
-		this.$el.html(title + dropdown + button);
+		console.log(app.users.pluck("username"));
+		var users = app.users.pluck("username");
+		var dropdown = '<select id = "dropdown">'
+		users.forEach(function(element){dropdown += "<option>"+element+"</option>"; console.log(dropdown)})
+		dropdown += ('</select>');
+		// console.log(dropdown)
+		var title = '<h1>Please Choose A Username</h1>';
+		var all =  title + dropdown + button;
+		this.$el.html(  all );
 
+	},
+	rerender: function() {
+		console.log("re-rendering");
+		var header = '<h1>Welcome User</h1>';
+		this.$el.html ( header );
+		// this.rerender();
 	},
 	initialize: function() {
 		// this.model.on("change", this.render, this);
 
 	},
 	events: {
-
+		"click button" : "login"
 	},
 	login: function() {
-
+		console.log("loging in");
+			this.undelegateEvents();
+	    this.$el.removeData().unbind();
+			this.remove();
+			Backbone.View.prototype.remove.call(this);
+			this.rerender();
 	}
 
 });
@@ -50,6 +67,7 @@ function GUI(users,tasks,el) {
 	var login = new LoginView();
 	login.render();
 	$("#app").append(login.$el);
+	// login.rerender();
 
 	//...
 }
