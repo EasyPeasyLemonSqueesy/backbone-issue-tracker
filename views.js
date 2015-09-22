@@ -14,22 +14,40 @@ var TaskView = Backbone.View.extend({
   }
 });
 
-var CreateTaskView = Backbone.View.extend({
-
-});
-
 var UnassignedTasksView = Backbone.View.extend({
-	render: function() {
-		var header = '<h1>Unassigned Tasks View</h1>';
-		this.$el.html ( header );
-	}
+	render: function () {
+			// var usernames = UserModel.model.get("value");
+			var btn = '<button id="newTask">New</button>';
+			this.$el.html('<h1>Unassigned Tasks</h1>' + btn);
+	},
+	initialize: function () {
+			this.listenTo(app.tasks, 'change', this.render);
+			this.render();
+	},
+	events : {
+			'click #newTask' : 'newTask'
+	},
+	newTask: function () {
+		console.log('pushed NewTask button');
+	},
 });
 
 var UserTasksView = Backbone.View.extend({
-	render: function() {
-		var header = '<h1>User Tasks View</h1>';
-		this.$el.html ( header );
-	}
+	render: function () {
+			// var usernames = UserModel.model.get("value");
+			var btn = '<button id="removeTask">New</button>';
+			this.$el.html('<h1>User Tasks</h1>' + btn);
+	},
+	initialize: function () {
+			this.listenTo(app.tasks, 'change', this.render);
+			this.render();
+	},
+	events : {
+			'click #removeTask' : 'removeTask'
+	},
+	removeTask: function () {
+		console.log('pushed removeTask button');
+	},
 });
 
 var UserView = Backbone.View.extend({
@@ -108,11 +126,9 @@ var LoginView = Backbone.View.extend({
 function GUI(users,tasks,el) {
 	console.log( 'CONSTRUCTION gui\n===================')
   
-  
   var login = new LoginView();
   login.render();
   $(el).append(login.$el);
-  
   // users is collection of User models: app.users
   //===================================
 
@@ -123,7 +139,7 @@ function GUI(users,tasks,el) {
   // el is selector for where GUI connects in DOM: #app
   //===================================
   console.log('GUI thinks el is ', el);
-  
+
 
 
   // render each task and append them
@@ -134,9 +150,9 @@ function GUI(users,tasks,el) {
     console.log('LOOP tasks.each!!\n=================\n the current task is =>', task);
 
     console.log( 'task.title: "', task.get('title'), '"' );
-    
+
     var issue = new TaskView({ model : task });
-    
+
     console.log('renamed it issue: ', issue)
     issue.render();
 
