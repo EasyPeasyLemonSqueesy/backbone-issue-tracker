@@ -8,9 +8,9 @@ $(function() { //when DOM is ready...
 		{username:'Adam'}
 	]);
 
-	// app.tasks = new TaskCollection([
-	// 	// test data here
-	// ]);
+	app.tasks = new IssueCollection([
+		// test data here
+	]);
 
 	app.gui = new GUI(app.users,
 						app.tasks,
