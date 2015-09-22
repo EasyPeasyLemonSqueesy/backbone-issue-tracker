@@ -1,6 +1,7 @@
 var app = {};
 
 $(function() { //when DOM is ready...
+	console.log("this is running");
 	app.users = new UserCollection([
 		{username:'Person1'},
 		{username:'Person2'},
@@ -14,4 +15,7 @@ $(function() { //when DOM is ready...
 	app.gui = new GUI(app.users,
 						app.tasks,
 						'#app');// selector of main div
-}
+} //end of inner function
+); //end of parameter
+//(); //call $
+// console.log($);
