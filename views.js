@@ -1,5 +1,42 @@
 var GUI = (function(){ //IIFE for all Views
 
+var AddTask = Backbone.View.extend({
+  className: 'modal',
+
+  render: function(){
+    var $form = $('<form>');
+    var $title = $('<input type="text" name="title" class="title">');
+    var $description = $('<input type="text" name="description" class="description">');
+    //var $creator = $();
+    //var $assignee = $();
+    //var $status = $();
+    var $submit = $('<button class="submit">');
+    $form.append([$title, $description, $submit] )
+    this.$el.html($form);
+  },
+
+  initialize: function(){
+    $('#app').addClass('faded');
+    $('body').append(this.$el);
+  },
+
+  events: {
+    'click .submit' : 'addTask'
+  },
+
+  addTask : function() {
+    var task = {
+      title : $(this).closest('.title').html(),
+      description : $(this).closest('.description').html(),
+      creator : app.currentUser
+    }
+    app.tasks.add( task );
+
+    $('#app').removeClass('faded');
+  }
+
+})
+
 var TaskView = Backbone.View.extend({
   tagName: 'p',
   className: 'task',
@@ -10,7 +47,9 @@ var TaskView = Backbone.View.extend({
     this.$el.html(description);
   },
   initialize: function(){
-    $('#app').append(this.$el)
+
+  },
+  events : {
   }
 });
 
@@ -69,29 +108,8 @@ var LoginView = Backbone.View.extend({
 		var all =  title + dropdown + button;
 		this.$el.html(  all );
 	},
-	rerender: function() {
-		console.log("re-rendering");
-
-		this.$el.empty();
-		// this.$el.append( this.subView.render().el );
-
-		var logout = '<button id = "logout">Log-Out</button>';
-
-		var header = '<h1>Welcome, '+this.currentUser+'!</h1>';
-		var stuff =  this.$el.html ( header + logout);
-		$('#app').append(stuff);
-		var unassigned = new UnassignedTasksView();
-		var usertasks = new UserTasksView();
-		unassigned.render();
-		usertasks.render();
-		$('#app').append(unassigned.$el);
-		$('#app').append(usertasks.$el);
-		// this.subView.delegateEvents();
-
-
-	},
 	delete: function() {
-			this.remove();
+			$('#app').html('');
 	},
 	initialize: function() {
 		console.log("initializing");
@@ -109,7 +127,6 @@ var LoginView = Backbone.View.extend({
 			// this.undelegateEvents();
 	    // this.$el.removeData().unbind();
 			// Backbone.View.prototype.remove.call(this);
-			this.rerender();
 	},
 	logout: function() {
 		console.log("logging out");
@@ -126,12 +143,6 @@ var LoginView = Backbone.View.extend({
 function GUI(users,tasks,el) {
 	console.log( 'CONSTRUCTION gui\n===================')
   
-  var login = new LoginView();
-  login.render();
-  $(el).append(login.$el);
-  // users is collection of User models: app.users
-  //===================================
-
   // tasks is collection of Task models: app.tasks
   //===================================
   console.log( 'the task collection is: ', tasks);
@@ -139,25 +150,6 @@ function GUI(users,tasks,el) {
   // el is selector for where GUI connects in DOM: #app
   //===================================
   console.log('GUI thinks el is ', el);
-
-
-
-  // render each task and append them
-  //===================================
-
-  tasks.each( function(task){
-
-    console.log('LOOP tasks.each!!\n=================\n the current task is =>', task);
-
-    console.log( 'task.title: "', task.get('title'), '"' );
-
-    var issue = new TaskView({ model : task });
-
-    console.log('renamed it issue: ', issue)
-    issue.render();
-
-  })
-
 }
 
 return GUI;
