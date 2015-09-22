@@ -1,10 +1,11 @@
 var app = {};
 
 $(function() { //when DOM is ready...
+	console.log("main is running");
 	app.users = new UserCollection([
-		{username:'Person1'},
-		{username:'Person2'},
-		{username:'Person3'}
+		{username:'Joseph'},
+		{username:'Nathaniel'},
+		{username:'Adam'}
 	]);
 
 	app.tasks = new IssueCollection([

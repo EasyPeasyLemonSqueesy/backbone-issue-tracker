@@ -1,8 +1,9 @@
 var UserModel = Backbone.Model.extend({
 	defaults: {
 		username:''
-	}
-})
+	},
+	currentUser : ''
+});
 
 var IssueModel = Backbone.Model.extend({
 	defaults: {
@@ -13,12 +14,12 @@ var IssueModel = Backbone.Model.extend({
 		status:'unassigned',
 	}
 	// Add methods if needed...
-})
+});
 
 var UserCollection = Backbone.Collection.extend({
 	model:UserModel
-})
+});
 
 var IssueCollection = Backbone.Collection.extend({
 	model:IssueModel
-})
+});
