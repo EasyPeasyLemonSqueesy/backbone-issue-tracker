@@ -1,7 +1,7 @@
 var app = {};
 
 $(function() { //when DOM is ready...
-	console.log("this is running");
+	console.log("main is running");
 	app.users = new UserCollection([
 		{username:'Joseph'},
 		{username:'Nathaniel'},
