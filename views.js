@@ -4,31 +4,52 @@ var TaskView = Backbone.View.extend({
   tagName: 'p',
   className: 'task',
   render: function(){
-    console.log('RENDER TaskView!!\n===================')
-    console.log('the model im rendering is ', this.model.get('title'));
     var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status');
     this.$el.html(description);
   },
-  initialize: function(){
-    $('#app').append(this.$el)
+  initialize: function(options){
+    console.log("my parent is: ", options.parent);
+    var parent = options.parent[0];
+    console.log('parent', parent);
+    $(parent).html(this.$el);
   }
 });
 
 var UnassignedTasksView = Backbone.View.extend({
-	render: function () {
-			// var usernames = UserModel.model.get("value");
-			var btn = '<button id="newTask">New</button>';
-			this.$el.html('<h1>Unassigned Tasks</h1>' + btn);
-	},
+	tagName: 'div',
+	className: 'appendThisThingPlease',
 	initialize: function () {
-			this.listenTo(app.tasks, 'change', this.render);
-			this.render();
-	},
+		console.log("ran UnassignedTasksView");
+		var btn = '<button id="newTask">New</button>';
+
+		this.$el.html('<h1>Unassigned Tasks</h1>' + btn);
+		this.listenTo(app.tasks, 'change', this.render);
+
+},
+render: function () {
+		// var usernames = UserModel.model.get("value");
+		var btn = '<button id="newTask">New</button>';
+    var contain = this.$el;
+    app.tasks.each( function(task){
+			this.viewB = new TaskView({ model : task, parent: contain });
+			this.viewB.render();
+      console.log( "the rendered objects fruit is: ", viewB.fruit);
+			// this.viewB.parentView = this;
+      contain += '<br>' + this.viewB;
+			$('.appendThisThingPlease').append(this.viewB);
+		});
+    $('.appendThisThingPlease').append(contain);
+
+    console.log(this.el, this.$el);
+
+		this.$el.html('<h1>Unassigned Tasks</h1>' + btn);
+},
+
 	events : {
 			'click #newTask' : 'newTask'
 	},
 	newTask: function () {
-		console.log('pushed NewTask button');
+		console.log(app.tasks);
 	},
 });
 
@@ -125,7 +146,7 @@ var LoginView = Backbone.View.extend({
 // generic ctor to represent interface:
 function GUI(users,tasks,el) {
 	console.log( 'CONSTRUCTION gui\n===================')
-  
+
   var login = new LoginView();
   login.render();
   $(el).append(login.$el);
@@ -145,18 +166,7 @@ function GUI(users,tasks,el) {
   // render each task and append them
   //===================================
 
-  tasks.each( function(task){
 
-    console.log('LOOP tasks.each!!\n=================\n the current task is =>', task);
-
-    console.log( 'task.title: "', task.get('title'), '"' );
-
-    var issue = new TaskView({ model : task });
-
-    console.log('renamed it issue: ', issue)
-    issue.render();
-
-  })
 
 }
 
