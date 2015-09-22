@@ -15,43 +15,6 @@ var TaskView = Backbone.View.extend({
 });
 
 var UnassignedTasksView = Backbone.View.extend({
-
-// <<<<<<< HEAD
-// 	render: function() {
-// 		var header = '<h1>Unassigned Tasks View</h1>';
-// 		this.$el.html ( header );
-// 	},
-// 	delete: function() {
-// 			this.remove();
-// 		},
-// 		logout: function() {
-// 			console.log("logging out");
-// 			// unassigned.remove();
-// 			// usertasks.remove();
-// 			// this.delete(this.$el);
-// 			console.log();
-// 			this.render();
-// 		}
-// });
-//
-// var UserTasksView = Backbone.View.extend({
-// 	render: function() {
-// 		var header = '<h1>User Tasks View</h1>';
-// 		this.$el.html ( header );
-// 	},
-// 	delete: function() {
-// 			this.remove();
-// 		},
-// 		logout: function() {
-// 			console.log("logging out");
-// 			// unassigned.remove();
-// 			// usertasks.remove();
-// 			// this.delete(this.$el);
-// 			console.log();
-// 			this.render();
-// 		}
-// =======
-
 	render: function () {
 			// var usernames = UserModel.model.get("value");
 			var btn = '<button id="newTask">New</button>';
@@ -98,8 +61,10 @@ var UserView = Backbone.View.extend({
 			var unassignedTasksViewHeader = '<h1>Unassigned Tasks View</h1>';
 			var unassignedTasksView = new UnassignedTasksView();
 			unassignedTasksView.render();
-			var stuff = header + logout + userTasksViewHeader + userTasksView + unassignedTasksViewHeader + unassignedTasksView;
-			this.$el.html ( stuff );
+			var stuff = header + logout;
+      this.$el.append(unassignedTasksView.$el);
+      this.$el.append(userTasksView.$el);
+      this.$el.prepend( stuff );
 	},
 	events: {
 		"click #logout" : "logout"
@@ -107,7 +72,7 @@ var UserView = Backbone.View.extend({
 	logout: function() {
 		console.log("logging out");
 		// this.$el.empty();
-		this.remove();
+    $('#app').html('');
 		app.gui.switchToLogin();
 	}
 });
@@ -118,7 +83,7 @@ var LoginView = Backbone.View.extend({
 		console.log(app.users.pluck("username"));
 		var users = app.users.pluck("username");
 		var dropdown = '<select id = "dropdown">'
-		users.forEach(function(element){dropdown += "<option>"+element+"</option>";})
+    users.forEach(function(element){dropdown += "<option>"+element+"</option>";})
 		dropdown += ('</select>');
 		var title = '<h1>Please Choose A Username</h1>';
 		var all =  title + dropdown + button;
@@ -189,18 +154,18 @@ this.switchToLogin();
   // render each task and append them
   //===================================
 
-  tasks.each( function(task){
-
-    console.log('LOOP tasks.each!!\n=================\n the current task is =>', task);
-
-    console.log( 'task.title: "', task.get('title'), '"' );
-
-    var issue = new TaskView({ model : task });
-
-    console.log('renamed it issue: ', issue)
-    issue.render();
-
-  })
+  // tasks.each( function(task){
+  //
+  //   console.log('LOOP tasks.each!!\n=================\n the current task is =>', task);
+  //
+  //   console.log( 'task.title: "', task.get('title'), '"' );
+  //
+  //   var issue = new TaskView({ model : task });
+  //
+  //   console.log('renamed it issue: ', issue)
+  //   issue.render();
+  //
+  // })
 
 
 
