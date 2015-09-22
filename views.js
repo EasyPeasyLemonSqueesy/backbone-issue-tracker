@@ -15,6 +15,7 @@ var TaskView = Backbone.View.extend({
 });
 
 var UnassignedTasksView = Backbone.View.extend({
+
 // <<<<<<< HEAD
 // 	render: function() {
 // 		var header = '<h1>Unassigned Tasks View</h1>';
@@ -50,6 +51,7 @@ var UnassignedTasksView = Backbone.View.extend({
 // 			this.render();
 // 		}
 // =======
+
 	render: function () {
 			// var usernames = UserModel.model.get("value");
 			var btn = '<button id="newTask">New</button>';
@@ -83,7 +85,7 @@ var UserTasksView = Backbone.View.extend({
 	removeTask: function () {
 		console.log('pushed removeTask button');
 	},
-// >>>>>>> 2d3d25e02670bbd92604b627fb59c3dd7b4a0d07
+
 });
 
 var UserView = Backbone.View.extend({
@@ -154,6 +156,7 @@ var LoginView = Backbone.View.extend({
 // generic ctor to represent interface:
 function GUI(users,tasks,el) {
 
+
 	// users is collection of User models
 	// tasks is collection of Task models
 	// el is selector for where GUI connects in DOM
@@ -181,6 +184,31 @@ this.switchToLogin();
   // tasks is collection of Task models: app.tasks
   //===================================
   console.log( 'the task collection is: ', tasks);
+
+  // el is selector for where GUI connects in DOM: #app
+  //===================================
+  console.log('GUI thinks el is ', el);
+
+
+
+  // render each task and append them
+  //===================================
+
+  tasks.each( function(task){
+
+    console.log('LOOP tasks.each!!\n=================\n the current task is =>', task);
+
+    console.log( 'task.title: "', task.get('title'), '"' );
+
+    var issue = new TaskView({ model : task });
+
+    console.log('renamed it issue: ', issue)
+    issue.render();
+
+  })
+
+}
+
 
   // el is selector for where GUI connects in DOM: #app
   //===================================
