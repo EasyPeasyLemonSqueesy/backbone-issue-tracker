@@ -121,6 +121,10 @@ var LoginView = Backbone.View.extend({
 
 // generic ctor to represent interface:
 function GUI(users,tasks,el) {
+
+	var login = new LoginView();
+	login.render();
+	$("#app").append(login.$el);
 	console.log( 'CONSTRUCTION gui\n===================')
 
   // users is collection of User models: app.users
@@ -139,6 +143,7 @@ function GUI(users,tasks,el) {
   // render each task and append them
   //===================================
 
+
   tasks.each( function(task){
 
     console.log('LOOP tasks.each!!\n=================\n the current task is =>', task);
@@ -150,9 +155,6 @@ function GUI(users,tasks,el) {
     console.log('renamed it issue: ', issue)
     issue.render();
 
-    var login = new LoginView();
-    login.render();
-    $("#app").append(login.$el);
   })
 }
 
