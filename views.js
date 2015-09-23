@@ -10,6 +10,7 @@ var GUI = (function(){ //IIFE for all Views
 //  5. UserView
 //  6. LoginView
 //  7. GUI
+//
 //=============================================
 
 
@@ -26,8 +27,8 @@ var GUI = (function(){ //IIFE for all Views
 
     render: function(){
       var $form = $('<form>');
-      var $title = $('<input type="text" name="title" id="title" placholder="task title">');
-      var $description = $('<input type="text" name="description" id="description" placholder="task title">');
+      var $title = $('<input type="text" name="title" id="title" placeholder="task title">');
+      var $description = $('<input type="text" name="description" id="description" placeholder="task description">');
       var $submit = $('<button id="submit">Submit</button>');
       $form.append([$title, $description, $submit] );
       this.$el.html($form);
@@ -36,7 +37,7 @@ var GUI = (function(){ //IIFE for all Views
     initialize: function(){
       $('#app').addClass('faded');
       this.render();
-      $('body').append(this.$el);
+      $('#app').append(this.$el);
     },
 
     events: {
@@ -52,12 +53,7 @@ var GUI = (function(){ //IIFE for all Views
         creator : app.currentUser
       };
 
-      console.log( 'add this task: ', task);
-
-      console.log( 'app.tasks before changes: ', app.tasks );
       app.tasks.add( task );
-      console.log( 'app.tasks after changes: ', app.tasks );
-
       $('#app').removeClass('faded');
     }
   });
@@ -140,6 +136,7 @@ var GUI = (function(){ //IIFE for all Views
   	className: 'UnassignedTasksView',
   	initialize: function () {
       this.listenTo(app.tasks, 'change', this.render);
+      this.listenTo(app.tasks, 'update', this.render);
 
   },
 
@@ -176,7 +173,6 @@ var GUI = (function(){ //IIFE for all Views
     newTask: function () {
       var addTask = new AddTaskView();
       addTask.render();
-      this.$el.append(addTask.$el);
     }
   });
 
@@ -195,8 +191,7 @@ var GUI = (function(){ //IIFE for all Views
   	render: function () {
 			// var usernames = UserModel.model.get("value");
       console.log('UserTasksView');
-			var btn = '<button id="removeTask">Remove A Task</button>';
-			this.$el.html('<h1>User Tasks</h1>' + btn);
+			this.$el.html('<h1>User Tasks</h1>');
 
       for(var i = 0; i < app.tasks.length; i++){
         if(app.tasks.at(i).get('assignee') == app.currentUser){
@@ -210,13 +205,7 @@ var GUI = (function(){ //IIFE for all Views
 			this.listenTo(app.tasks, 'change', this.removeTask);
   	},
   	events : {
-  		'click #removeTask' : 'removeTask'
   	},
-  	removeTask: function () {
-  		console.log('pushed removeTask button');
-      this.render();
-  	},
-
   });
 
 
@@ -229,6 +218,7 @@ var GUI = (function(){ //IIFE for all Views
 //=============================================
 
   var UserView = Backbone.View.extend({
+    id : 'UserView',
   	render: function() {
 			var logout = '<button id = "logout">Log-Out</button>';
 			var header = '<h1>Welcome, '+app.currentUser+'!</h1>';
@@ -264,6 +254,7 @@ var GUI = (function(){ //IIFE for all Views
 //=============================================
 
 var LoginView = Backbone.View.extend({
+  id : 'LoginView',
 	render: function() {
 		var button = '<button id = "login">Login</button>';
 		var users = app.users.pluck("username");
