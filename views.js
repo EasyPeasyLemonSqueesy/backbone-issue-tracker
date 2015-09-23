@@ -64,8 +64,10 @@ var UnassignedTasksView = Backbone.View.extend({
 		this.$el.html('<h1>Unassigned Tasks</h1>'+ btn);
 
     for(var i = 0; i < app.tasks.length; i++){
+      if(app.tasks.at(i).get('status') == 'unassigned'){
       var viewB = new TaskView({index: i, model: app.tasks.at(i)});
       this.$el.append(viewB.$el);
+    }
   }
 },
 
@@ -81,10 +83,17 @@ var UnassignedTasksView = Backbone.View.extend({
 			// var usernames = UserModel.model.get("value");
 			var btn = '<button id="removeTask">New</button>';
 			this.$el.html('<h1>User Tasks</h1>' + btn);
+
+      for(var i = 0; i < app.tasks.length; i++){
+        if(app.tasks.at(i).get('assignee') == app.currentUser){
+          var viewB = new TaskView({index: i, model: app.tasks.at(i)});
+          this.$el.append(viewB.$el);
+        }
+    }
+
   	},
   	initialize: function () {
 			this.listenTo(app.tasks, 'change', this.render);
-			this.render();
   	},
   	events : {
   		'click #removeTask' : 'removeTask'
@@ -110,22 +119,22 @@ var UnassignedTasksView = Backbone.View.extend({
       this.$el.append(userTasksView.$el);
       this.$el.prepend( stuff );
 	},
-	events: {
-		"click #logout" : "logout"
-	},
-	logout: function() {
-		console.log("logging out");
-		// this.$el.empty();
-    $('#app').html('');
-		app.gui.switchToLogin();
-	}
+  	events: {
+  		"click #logout" : "logout"
+  	},
+  	logout: function() {
+  		console.log("logging out");
+  		// this.$el.empty();
+      $('#app').html('');
+  		app.gui.switchToLogin();
+  	}
 });
 
 var LoginView = Backbone.View.extend({
 	render: function() {
 		var button = '<button id = "login">Login</button>';
 		var users = app.users.pluck("username");
-		var dropdown = '<select id = "dropdown">'
+		var dropdown = '<select id = "dropdown">';
     users.forEach(function(element){dropdown += "<option>"+element+"</option>";})
 		dropdown += ('</select>');
 		var title = '<h1>Please Choose A Username</h1>';
