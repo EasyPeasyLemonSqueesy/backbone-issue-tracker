@@ -1,43 +1,116 @@
-#unassignedTasks {
-  border: 1px solid black;
-  background: #2f6fff;
+/*         GENERAL STYLES
+=======================================*/
+
+* {
+  margin: 0;
+  padding: 0;
 }
-div {
-  width: 100%;
+
+#app{
+  padding: 20px;
 }
+
+header {
+  margin: 0;
+  padding: 10px;
+  background: #249;
+  color: white;
+  font-family: Optima, Segoe,  'Segoe UI', Candara, Calibri, Arial, sans-serif;
+}
+
+#row {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  clear: both;
+}
+
+.column {
+  display: flex;
+  flex-flow: column nowrap;
+  padding: 10px;
+  width: 24%;
+  border: solid black 1px;
+  min-height: 100%;
+  float: left;
+}
+
+.column h1 {
+  margin-bottom: 10px;
+}
+
+.task {
+  background: #555;
+  color: #ddd;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+button {
+  font-size: 16px;
+  padding: 2px;
+}
+
+
+button#logout {
+  float: right;
+}
+
+.task button {
+  margin: 0 auto;
+  width: 90%;
+}
+
+#dropdown {
+  padding: 50px;
+  width: 200px;
+  font-size: 20px;
+}
+
+#greeting h1 {
+  float: left;
+  width: 80%;
+}
+
+/*          MODAL STYLES
+=======================================*/
+
 .faded {
   background: lightgray;
 }
 
+/*       COMPLETED |X| STYLES
+=======================================*/
+
 #complete {
   background: lightgray;
   border: solid 1px black;
-}
-
-#complete {
-    position: relative;
-    background: gray;
-    padding: 30px;
-    overflow: hidden;
+  position: relative;
+  background: gray;
+  padding: 30px;
+  overflow: hidden;
 }
 
 #complete:before, #complete:after {
-    position: absolute;
-    content: '';
-    background: red;
-    display: block;
-    width: 100%;
-    height: 30px;
-    -webkit-transform: rotate(-45deg);
-    transform: rotate(-45deg);
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    margin: auto;
+  position: absolute;
+  content: '';
+  background: red;
+  display: block;
+  width: 100%;
+  height: 30px;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
 }
 
 #complete:after {
-    -webkit-transform: rotate(45deg);
-    transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+#complete:before {
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
 }
