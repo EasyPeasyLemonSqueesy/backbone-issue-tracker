@@ -56,6 +56,7 @@ var UserTasksView = Backbone.View.extend({
 	removeTask: function () {
 		console.log('pushed removeTask button');
 	},
+
 });
 
 var UserView = Backbone.View.extend({
@@ -109,10 +110,14 @@ var LoginView = Backbone.View.extend({
 	},
 	login: function() {
 		app.currentUser = $('#dropdown').val();
-	  this.remove();
+
+		console.log(app.currentUser);
+		console.log("loging in");
+    this.remove();
 			app.gui.switchToUser();
 	},
 	logout: function() {
+		console.log("logging out");
 		this.$el.empty();
 		this.remove();
 		app.gui.switchToLogin();
@@ -140,36 +145,8 @@ function GUI(users,tasks,el) {
 	var currentUser = this.currentUser;
 this.switchToLogin();
 
-// =======
-//
-// 	var login = new LoginView();
-// 	login.render();
-// 	$("#app").append(login.$el);
-// 	console.log( 'CONSTRUCTION gui\n===================')
-// >>>>>>> TaskView
-
-  // users is collection of User models: app.users
-  //===================================
-
-  // tasks is collection of Task models: app.tasks
-  //===================================
-
-  // el is selector for where GUI connects in DOM: #app
-  //===================================
 
 
-
-  // render each task and append them
-  //===================================
-
-
-
-  // tasks.each( function(task){
-
-
-
-
-  // })
 
 }
 return GUI;
