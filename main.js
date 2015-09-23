@@ -10,11 +10,17 @@ $(function() { //when DOM is ready...
 
 	app.tasks = new IssueCollection([
 		{
+			title: 'GHUEHGUEHUGHUEHUHG',
+			description: 'schedule a tea party.',
+			creator: 'Monster',
+			assignee:''
+		},
+		{
 			title: 'Test the issue render',
 			description: 'make sure that the page can render tasks',
 			creator: 'Joseph',
 			assignee:'Nathan',
-			status: 'unassigned'
+			status: 'assigned'
 		},
 		{
 			title: 'Test the issue Collection',

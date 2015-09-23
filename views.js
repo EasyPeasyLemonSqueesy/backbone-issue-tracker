@@ -74,54 +74,67 @@ var GUI = (function(){ //IIFE for all Views
 
     render: function(){
 
-      if (this.model.get('status') === 'completed') {
-        console.log("Changing to completed");
-        var stuff = '<div id = "complete">' + this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br></div>';
-       this.$el.html(stuff);
-      }
-      else if (this.model.get('assignee') === app.currentUser) {
-        var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="unclaim">Unclaim This Task</button> <button id = "completed">Complete This Task</button>';
-        this.$el.html(description);
-      }
-      else {
-       var other = '<div id = "other">' + this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="claim">Claim This Task</button></div>';
-      this.$el.html(other);
-    }
-  },
-    // rerender: function() {
-    //   this.remove();
-    //   var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="unclaim">Unclaim This Task</button>';
-    //   this.$el.html(description);
-    //
-    // },
+      var $unclaim  = $('<button class="btn-unclaim">').html('unclaim');
+      var $claim    = $('<button class="btn-claim">').html('claim');
+      var $assign   = $('<button class="btn-assign">').html('assign');
+      var $complete = $('<button class="btn-complete">').html('complete');
 
-    initialize: function(options){
-      this.index = options.index;
+      var task = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br>'
+
+      this.$el.html(task);
+      this.$el.append([$unclaim, $claim, $assign, $complete]);
+    },
+
+    initialize: function(){
       this.render();
     },
-    events: {
-      'click #claim' : 'change',
-      'click #unclaim' : 'changeBack',
-      'click #completed' : 'complete'
-    },
-    change: function() {
-      console.log("Claiming A Task");
-      // this.model.set('assignee') = app.currentUser;
-      this.model.set({'assignee' : app.currentUser});
-      this.model.set({'status' : 'assigned'});
-      // this.rerender();
-      console.log(this.model.get('status'));
-    },
-    changeBack: function() {
-      this.model.set({'assignee' : ''});
-      this.model.set({'status' : 'unassigned'});
-      console.log("Unclaiming A Task");
-    },
-    complete: function() {
-      this.model.set({'status' : 'completed'});
-    }
-  });
 
+    events: {
+      'click .btn-unclaim'  : 'unclaim',
+      'click .btn-claim'    : 'claim',
+      'click .btn-assign'   : 'assign',
+      'click .btn-complete' : 'complete'
+    },
+
+    unclaim : function() {
+      console.log( 'unclaiming a task' );
+      this.model.set({ 'assignee' : '' });
+      this.model.set({ 'status' : 'unnassigned' });
+      console.log( 'the new assignee is: ', this.model.get('assignee') );
+      console.log( 'the new status is: ', this.model.get('status') );
+    },
+
+    claim : function() {
+      console.log( 'claiming a task' );
+      this.model.set({ 'assignee' : app.currentUser });
+      this.model.set({ 'status' : 'assigned' });
+      console.log( 'the new assignee is: ', this.model.get('assignee') );
+      console.log( 'the new status is: ', this.model.get('status') );
+    },
+
+    assign : function() {
+      console.log( 'delegating a task' );
+
+      /* FIX THIS UP
+      *=======================
+      *
+      * this.model.set({ 'assignee' : app.currentUser });
+      *
+      */
+
+      this.model.set({ 'status' : 'assigned' });
+      console.log( 'the new assignee is: ', this.model.get('assignee') );
+      console.log( 'the new status is: ', this.model.get('status') );
+    },
+
+    complete : function (){
+      console.log( 'complete a task' );
+      this.model.set({ 'assignee' : '' });
+      this.model.set({ 'status' : 'completed' });
+      console.log( 'the new assignee is: ', this.model.get('assignee') );
+      console.log( 'the new status is: ', this.model.get('status') );
+    }
+});
 
 
 //=============================================
@@ -145,7 +158,7 @@ var GUI = (function(){ //IIFE for all Views
   		this.$el.html('<h1>Unassigned Tasks</h1>'+ btn);
 
       for(var i = 0; i < app.tasks.length; i++){
-        if(app.tasks.at(i).get('status') == 'unassigned'){
+        if(app.tasks.at(i).get('status') == 'unassigned' || app.tasks.at(i).get('status') == ''){
           var viewB = new TaskView({index: i, model: app.tasks.at(i)});
           this.$el.append(viewB.$el);
         }
@@ -191,7 +204,7 @@ var GUI = (function(){ //IIFE for all Views
   	render: function () {
 			// var usernames = UserModel.model.get("value");
       console.log('UserTasksView');
-			this.$el.html('<h1>User Tasks</h1>');
+			this.$el.html('<h1>My Tasks</h1>');
 
       for(var i = 0; i < app.tasks.length; i++){
         if(app.tasks.at(i).get('assignee') == app.currentUser){
@@ -202,10 +215,44 @@ var GUI = (function(){ //IIFE for all Views
 
   	},
   	initialize: function () {
+      this.listenTo(app.tasks, 'update', this.removeTask);
 			this.listenTo(app.tasks, 'change', this.removeTask);
   	},
   	events : {
   	},
+  });
+
+
+//=============================================
+// 5. AssignedTasksView :
+//    View for tasks filtered by active user
+//    Called by :
+//      UserView
+//=============================================
+
+  var AssignedTasksView = Backbone.View.extend({
+    tagName: 'div',
+    className: 'AssignedTasksView',
+
+    render: function () {
+      // var usernames = UserModel.model.get("value");
+      console.log('AssignedTasksView');
+      this.$el.html('<h1>Assigned Tasks</h1>');
+
+      for(var i = 0; i < app.tasks.length; i++){
+        if(app.tasks.at(i).get('assignee') ){
+          var viewB = new TaskView({index: i, model: app.tasks.at(i)});
+          this.$el.append(viewB.$el);
+        }
+    }
+
+    },
+    initialize: function () {
+      this.listenTo(app.tasks, 'update', this.removeTask);
+      this.listenTo(app.tasks, 'change', this.removeTask);
+    },
+    events : {
+    },
   });
 
 
@@ -222,15 +269,23 @@ var GUI = (function(){ //IIFE for all Views
   	render: function() {
 			var logout = '<button id = "logout">Log-Out</button>';
 			var header = '<h1>Welcome, '+app.currentUser+'!</h1>';
-			var userTasksViewHeader = '<h1>User Tasks View</h1>';
+			
+      //var userTasksViewHeader = '<h1>User Tasks View</h1>';
 			var userTasksView = new UserTasksView();
 			userTasksView.render();
-			var unassignedTasksViewHeader = '<h1>Unassigned Tasks View</h1>';
+			
+      //var unassignedTasksViewHeader = '<h1>Unassigned Tasks View</h1>';
 			var unassignedTasksView = new UnassignedTasksView();
 			unassignedTasksView.render();
+
+      //var assignedTasksViewHeader = '<h1>Unassigned Tasks View</h1>';
+      var assignedTasksView = new AssignedTasksView();
+      assignedTasksView.render();
+
 			var stuff = header + logout;
       this.$el.append(unassignedTasksView.$el);
       this.$el.append(userTasksView.$el);
+      this.$el.append(assignedTasksView.$el);
       this.$el.prepend( stuff );
 	},
   	events: {
