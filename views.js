@@ -146,7 +146,6 @@ var LoginView = Backbone.View.extend({
 	},
 	login: function() {
 		app.currentUser = $('#dropdown').val();
-		console.log(app.currentUser);
 		console.log("loging in");
     this.remove();
 			app.gui.switchToUser();
