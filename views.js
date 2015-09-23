@@ -40,32 +40,30 @@ var TaskView = Backbone.View.extend({
   className: 'task',
 
   render: function(){
-    if (this.model.get('assignee') === app.currentUser ) {
-      var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="unclaim">Unclaim This Task</button>';
 
+    if (this.model.get('status') === 'completed') {
+      console.log("Changing to completed");
+      var stuff = '<div id = "complete">' + this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br></div>';
+     this.$el.html(stuff);
+    }
+    else if (this.model.get('assignee') === app.currentUser) {
+      var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="unclaim">Unclaim This Task</button> <button id = "completed">Complete This Task</button>';
       this.$el.html(description);
-
     }
     else {
-     description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="claim">Claim This Task</button>';
-
-    this.$el.html(description);
+     var other = '<div id = "other">' + this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="claim">Claim This Task</button></div>';
+    this.$el.html(other);
   }
 },
-  // rerender: function() {
-  //   this.remove();
-  //   var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="unclaim">Unclaim This Task</button>';
-  //   this.$el.html(description);
-  //
-  // },
-
   initialize: function(options){
-    this.index = options.index;
+
+    // this.index = options.index;
     this.render();
   },
   events: {
     'click #claim' : 'change',
-    'click #unclaim' : 'changeBack'
+    'click #unclaim' : 'changeBack',
+    'click #completed' : 'complete'
   },
   change: function() {
     console.log("Claiming A Task");
@@ -79,6 +77,16 @@ var TaskView = Backbone.View.extend({
     this.model.set({'assignee' : ''});
     this.model.set({'status' : 'unassigned'});
     console.log("Unclaiming A Task");
+  },
+  complete: function() {
+    console.log("Task Completed");
+    this.model.set({'status' : 'completed'});
+    this.addDiv();
+  },
+  addDiv: function() {
+    console.log("Adding Div");
+    this.remove();
+    this.initialize();
   }
 });
 
