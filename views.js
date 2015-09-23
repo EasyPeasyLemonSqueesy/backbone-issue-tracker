@@ -16,7 +16,7 @@ var GUI = (function(){ //IIFE for all Views
 
 
 //=============================================
-// 1. AddTaskView : 
+// 1. AddTaskView :
 //      Modal view for adding a task to the model
 //    Called by :
 //      UnassignedTaskView
@@ -30,7 +30,7 @@ var GUI = (function(){ //IIFE for all Views
       var $title = $('<input type="text" name="title" id="title" placholder="task title">');
       var $description = $('<input type="text" name="description" id="description" placholder="task title">');
       var $submit = $('<button id="submit">Submit</button>');
-      $form.append([$title, $description, $submit] )
+      $form.append([$title, $description, $submit] );
       this.$el.html($form);
     },
 
@@ -51,7 +51,7 @@ var GUI = (function(){ //IIFE for all Views
         title : this.$el.find('#title').val(),
         description : this.$el.find('#description').val(),
         creator : app.currentUser
-      }
+      };
 
       console.log( 'add this task: ', task);
 
@@ -66,7 +66,7 @@ var GUI = (function(){ //IIFE for all Views
 
 
 //=============================================
-// 2. TaskView : 
+// 2. TaskView :
 //      View for an individual task
 //    Called by :
 //      UnassignedTaskView
@@ -78,16 +78,19 @@ var GUI = (function(){ //IIFE for all Views
     className: 'task',
 
     render: function(){
-      if (this.model.get('assignee') === app.currentUser ) {
-        var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="unclaim">Unclaim This Task</button>';
 
+      if (this.model.get('status') === 'completed') {
+        console.log("Changing to completed");
+        var stuff = '<div id = "complete">' + this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br></div>';
+       this.$el.html(stuff);
+      }
+      else if (this.model.get('assignee') === app.currentUser) {
+        var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="unclaim">Unclaim This Task</button> <button id = "completed">Complete This Task</button>';
         this.$el.html(description);
-
       }
       else {
-       description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="claim">Claim This Task</button>';
-
-      this.$el.html(description);
+       var other = '<div id = "other">' + this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="claim">Claim This Task</button></div>';
+      this.$el.html(other);
     }
   },
     // rerender: function() {
@@ -103,7 +106,8 @@ var GUI = (function(){ //IIFE for all Views
     },
     events: {
       'click #claim' : 'change',
-      'click #unclaim' : 'changeBack'
+      'click #unclaim' : 'changeBack',
+      'click #completed' : 'complete'
     },
     change: function() {
       console.log("Claiming A Task");
@@ -117,23 +121,27 @@ var GUI = (function(){ //IIFE for all Views
       this.model.set({'assignee' : ''});
       this.model.set({'status' : 'unassigned'});
       console.log("Unclaiming A Task");
+    },
+    complete: function() {
+      this.model.set({'status' : 'completed'});
     }
   });
 
 
 
 //=============================================
-// 3. UnassignedTasksView: 
+// 3. UnassignedTasksView:
 //      View for all unassigned
-//    Called by : 
+//    Called by :
 //      UserView
 //=============================================
 
   var UnassignedTasksView = Backbone.View.extend({
   	tagName: 'div',
-  	className: 'appendThisThingPlease',
+  	className: 'UnassignedTasksView',
   	initialize: function () {
       this.listenTo(app.tasks, 'change', this.render);
+
   },
 
     render: function () {
@@ -142,15 +150,30 @@ var GUI = (function(){ //IIFE for all Views
 
       for(var i = 0; i < app.tasks.length; i++){
         if(app.tasks.at(i).get('status') == 'unassigned'){
-        var viewB = new TaskView({index: i, model: app.tasks.at(i)});
-        this.$el.append(viewB.$el);
+          var viewB = new TaskView({index: i, model: app.tasks.at(i)});
+          this.$el.append(viewB.$el);
+        }
       }
-    }
-  },
-
-  	events : {
+    },
+    changeBack: function() {
+      this.model.set({'assignee' : ''});
+      this.model.set({'status' : 'unassigned'});
+      console.log("Unclaiming A Task");
+    },
+    complete: function() {
+      console.log("Task Completed");
+      this.model.set({'status' : 'completed'});
+      this.addDiv();
+    },
+    addDiv: function() {
+      console.log("Adding Div");
+      this.remove();
+      this.initialize();
+    },
+    events: {
   			'click #newTask' : 'newTask'
   	},
+
     newTask: function () {
       var addTask = new AddTaskView();
       addTask.render();
@@ -159,15 +182,17 @@ var GUI = (function(){ //IIFE for all Views
   });
 
 
-
 //=============================================
-// 4. UserTasksView : 
+// 4. UserTasksView :
 //    View for tasks filtered by active user
-//    Called by : 
+//    Called by :
 //      UserView
 //=============================================
 
   var UserTasksView = Backbone.View.extend({
+    tagName: 'div',
+  	className: 'UserTasksView',
+
   	render: function () {
 			// var usernames = UserModel.model.get("value");
       console.log('UserTasksView');
@@ -200,7 +225,7 @@ var GUI = (function(){ //IIFE for all Views
 //=============================================
 // 5. UserView:
 //      View for whole page after logging in
-//    Called by : 
+//    Called by :
 //      LoginView
 //=============================================
 
@@ -235,7 +260,7 @@ var GUI = (function(){ //IIFE for all Views
 //=============================================
 // 6. LoginView :
 //      View for initial login page
-//    Called by : 
+//    Called by :
 //      GUI
 //=============================================
 
@@ -244,7 +269,7 @@ var LoginView = Backbone.View.extend({
 		var button = '<button id = "login">Login</button>';
 		var users = app.users.pluck("username");
 		var dropdown = '<select id = "dropdown">';
-    users.forEach(function(element){dropdown += "<option>"+element+"</option>";})
+    users.forEach(function(element){dropdown += "<option>"+element+"</option>";});
 		dropdown += ('</select>');
 		var title = '<h1>Please Choose A Username</h1>';
 		var all =  title + dropdown + button;
@@ -301,4 +326,5 @@ function GUI(users,tasks,el) {
 
 
   return GUI;
+
 })();

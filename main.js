@@ -13,7 +13,8 @@ $(function() { //when DOM is ready...
 			title: 'Test the issue render',
 			description: 'make sure that the page can render tasks',
 			creator: 'Joseph',
-			assignee:'Nathan'
+			assignee:'Nathan',
+			status: 'unassigned'
 		},
 		{
 			title: 'Test the issue Collection',
