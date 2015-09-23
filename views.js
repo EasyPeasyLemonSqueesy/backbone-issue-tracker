@@ -1,86 +1,132 @@
 var GUI = (function(){ //IIFE for all Views
 
-  var AddTask = Backbone.View.extend({
+//=============================================
+//              TABLE OF CONTENTS
+//  -----------------------------------------
+//  1. AddTaskView
+//  2. TaskView
+//  3. UnassignedTasksView
+//  4. UserTasksView
+//  5. UserView
+//  6. LoginView
+//  7. GUI
+//=============================================
+
+
+
+//=============================================
+// 1. AddTaskView :
+//      Modal view for adding a task to the model
+//    Called by :
+//      UnassignedTaskView
+//=============================================
+
+  var AddTaskView = Backbone.View.extend({
     className: 'modal',
 
     render: function(){
       var $form = $('<form>');
-      var $title = $('<input type="text" name="title" class="title">');
-      var $description = $('<input type="text" name="description" class="description">');
-      //var $creator = $();
-      //var $assignee = $();
-      //var $status = $();
-      var $submit = $('<button class="submit">Submit</button>');
+      var $title = $('<input type="text" name="title" id="title" placholder="task title">');
+      var $description = $('<input type="text" name="description" id="description" placholder="task title">');
+      var $submit = $('<button id="submit">Submit</button>');
       $form.append([$title, $description, $submit] )
       this.$el.html($form);
     },
 
     initialize: function(){
       $('#app').addClass('faded');
+      this.render();
       $('body').append(this.$el);
     },
 
     events: {
-      'click .submit' : 'addTask'
+      'click #submit' : 'addTask'
     },
 
-    addTask : function() {
+    addTask : function(event) {
+      event.preventDefault();
+
       var task = {
-        title : $(this).closest('.title').html(),
-        description : $(this).closest('.description').html(),
+        title : this.$el.find('#title').val(),
+        description : this.$el.find('#description').val(),
         creator : app.currentUser
       }
+
+      console.log( 'add this task: ', task);
+
+      console.log( 'app.tasks before changes: ', app.tasks );
       app.tasks.add( task );
+      console.log( 'app.tasks after changes: ', app.tasks );
 
       $('#app').removeClass('faded');
     }
   });
-var TaskView = Backbone.View.extend({
-  tagName: 'p',
-  className: 'task',
 
-  render: function(){
-    if (this.model.get('assignee') === app.currentUser ) {
-      var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="unclaim">Unclaim This Task</button>';
+
+
+//=============================================
+// 2. TaskView :
+//      View for an individual task
+//    Called by :
+//      UnassignedTaskView
+//      UserTaskView
+//=============================================
+
+  var TaskView = Backbone.View.extend({
+    tagName: 'p',
+    className: 'task',
+
+    render: function(){
+      if (this.model.get('assignee') === app.currentUser ) {
+        var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="unclaim">Unclaim This Task</button>';
+
+        this.$el.html(description);
+
+      }
+      else {
+       description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="claim">Claim This Task</button>';
 
       this.$el.html(description);
-
     }
-    else {
-     description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="claim">Claim This Task</button>';
+  },
+    // rerender: function() {
+    //   this.remove();
+    //   var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="unclaim">Unclaim This Task</button>';
+    //   this.$el.html(description);
+    //
+    // },
 
-    this.$el.html(description);
-  }
-},
-  // rerender: function() {
-  //   this.remove();
-  //   var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="unclaim">Unclaim This Task</button>';
-  //   this.$el.html(description);
-  //
-  // },
+    initialize: function(options){
+      this.index = options.index;
+      this.render();
+    },
+    events: {
+      'click #claim' : 'change',
+      'click #unclaim' : 'changeBack'
+    },
+    change: function() {
+      console.log("Claiming A Task");
+      // this.model.set('assignee') = app.currentUser;
+      this.model.set({'assignee' : app.currentUser});
+      this.model.set({'status' : 'assigned'});
+      // this.rerender();
+      console.log(this.model.get('status'));
+    },
+    changeBack: function() {
+      this.model.set({'assignee' : ''});
+      this.model.set({'status' : 'unassigned'});
+      console.log("Unclaiming A Task");
+    }
+  });
 
-  initialize: function(options){
-    this.index = options.index;
-    this.render();
-  },
-  events: {
-    'click #claim' : 'change',
-    'click #unclaim' : 'changeBack'
-  },
-  change: function() {
-    console.log("Claiming A Task");
-    // this.model.set('assignee') = app.currentUser;
-    this.model.set({'assignee' : app.currentUser});
-    this.model.set({'status' : 'assigned'});
-    // this.rerender();
-    console.log(this.model.get('status'));
-  },
-  changeBack: function() {
-    this.model.set({'assignee' : ''});
-    this.model.set({'status' : 'unassigned'});
-    console.log("Unclaiming A Task");
-  }
-});
+
+
+//=============================================
+// 3. UnassignedTasksView:
+//      View for all unassigned
+//    Called by :
+//      UserView
+//=============================================
 
 var UnassignedTasksView = Backbone.View.extend({
 	tagName: 'div',
@@ -101,17 +147,25 @@ var UnassignedTasksView = Backbone.View.extend({
   }
 },
 
-	events : {
-			'click #newTask' : 'newTask'
-	},
-  newTask: function () {
-    var addTask = new AddTask();
-    addTask.render();
-    this.$el.append(addTask.$el);
-  }
+    events: {
+  			'click #newTask' : 'newTask'
+  	},
 
-});
+    newTask: function () {
+      var addTask = new AddTaskView();
+      addTask.render();
+      this.$el.append(addTask.$el);
+    }
+  });
 
+
+
+//=============================================
+// 4. UserTasksView :
+//    View for tasks filtered by active user
+//    Called by :
+//      UserView
+//=============================================
 
   var UserTasksView = Backbone.View.extend({
     tagName: 'div',
@@ -144,6 +198,15 @@ var UnassignedTasksView = Backbone.View.extend({
 
   });
 
+
+
+//=============================================
+// 5. UserView:
+//      View for whole page after logging in
+//    Called by :
+//      LoginView
+//=============================================
+
   var UserView = Backbone.View.extend({
   	render: function() {
 			var logout = '<button id = "logout">Log-Out</button>';
@@ -169,6 +232,15 @@ var UnassignedTasksView = Backbone.View.extend({
   		app.gui.switchToLogin();
   	}
 });
+
+
+
+//=============================================
+// 6. LoginView :
+//      View for initial login page
+//    Called by :
+//      GUI
+//=============================================
 
 var LoginView = Backbone.View.extend({
 	render: function() {
@@ -209,7 +281,12 @@ var LoginView = Backbone.View.extend({
 });
 
 
-// generic ctor to represent interface:
+
+//=============================================
+// 7. GUI
+//    Function that builds everything at the end
+//=============================================
+
 function GUI(users,tasks,el) {
 	this.switchToUser = function (){
 		var userView = new UserView();
