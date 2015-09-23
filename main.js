@@ -19,13 +19,14 @@ $(function() { //when DOM is ready...
 			title: 'Test the issue Collection',
 			description: 'make sure the collection holds more than one task',
 			creator: 'Adam',
-			assignee:'Joseph'
+			assignee:'Joseph',
+			status: 'assigned'
 		},
 		{
 			title: 'Test the button',
 			description: 'make sure each task has a dropdown of statuses',
 			creator: 'Nate',
-			assignee:'Jim',
+			assignee:'Adam',
 			status: 'assigned'
 		}
 	]);
