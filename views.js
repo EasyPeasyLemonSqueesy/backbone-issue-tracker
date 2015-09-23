@@ -7,9 +7,11 @@ var GUI = (function(){ //IIFE for all Views
 //  2. TaskView
 //  3. UnassignedTasksView
 //  4. UserTasksView
-//  5. UserView
-//  6. LoginView
-//  7. GUI
+//  5. AssignedTasksView
+//  6. CompletedTasksView
+//  7. UserView
+//  8. LoginView
+//  9. GUI
 //
 //=============================================
 
@@ -79,7 +81,7 @@ var GUI = (function(){ //IIFE for all Views
       var $assign   = $('<button class="btn-assign">').html('assign');
       var $complete = $('<button class="btn-complete">').html('complete');
 
-      var task = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br>'
+      var task = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br>';
 
       this.$el.html(task);
       this.$el.append([$unclaim, $claim, $assign, $complete]);
@@ -97,23 +99,25 @@ var GUI = (function(){ //IIFE for all Views
     },
 
     unclaim : function() {
-      console.log( 'unclaiming a task' );
+      //console.log( 'unclaiming a task' );
       this.model.set({ 'assignee' : '' });
-      this.model.set({ 'status' : 'unnassigned' });
-      console.log( 'the new assignee is: ', this.model.get('assignee') );
-      console.log( 'the new status is: ', this.model.get('status') );
+      this.model.set({ 'status' : 'unassigned' });
+
+      // console.log( this.model );
+      // console.log( 'the new assignee is: ', this.model.get('assignee') );
+      // console.log( 'the new status is: ', this.model.get('status') );
     },
 
     claim : function() {
-      console.log( 'claiming a task' );
+      //console.log( 'claiming a task' );
       this.model.set({ 'assignee' : app.currentUser });
       this.model.set({ 'status' : 'assigned' });
-      console.log( 'the new assignee is: ', this.model.get('assignee') );
-      console.log( 'the new status is: ', this.model.get('status') );
+      // console.log( 'the new assignee is: ', this.model.get('assignee') );
+      // console.log( 'the new status is: ', this.model.get('status') );
     },
 
     assign : function() {
-      console.log( 'delegating a task' );
+      //console.log( 'delegating a task' );
 
       /* FIX THIS UP
       *=======================
@@ -123,16 +127,16 @@ var GUI = (function(){ //IIFE for all Views
       */
 
       this.model.set({ 'status' : 'assigned' });
-      console.log( 'the new assignee is: ', this.model.get('assignee') );
-      console.log( 'the new status is: ', this.model.get('status') );
+      // console.log( 'the new assignee is: ', this.model.get('assignee') );
+      // console.log( 'the new status is: ', this.model.get('status') );
     },
 
     complete : function (){
-      console.log( 'complete a task' );
+      //console.log( 'complete a task' );
       this.model.set({ 'assignee' : '' });
       this.model.set({ 'status' : 'completed' });
-      console.log( 'the new assignee is: ', this.model.get('assignee') );
-      console.log( 'the new status is: ', this.model.get('status') );
+      // console.log( 'the new assignee is: ', this.model.get('assignee') );
+      // console.log( 'the new status is: ', this.model.get('status') );
     }
 });
 
@@ -147,45 +151,38 @@ var GUI = (function(){ //IIFE for all Views
   var UnassignedTasksView = Backbone.View.extend({
   	tagName: 'div',
   	className: 'UnassignedTasksView',
-  	initialize: function () {
-      this.listenTo(app.tasks, 'change', this.render);
-      this.listenTo(app.tasks, 'update', this.render);
 
-  },
+  	initialize: function () {
+      this.listenTo( app.tasks, 'change', this.render);
+      this.listenTo( app.tasks, 'update', this.render);
+    },
 
     render: function () {
+      console.log('ive entered the rendering phase');
   		var btn = '<button id="newTask">Create A New Task</button>';
-  		this.$el.html('<h1>Unassigned Tasks</h1>'+ btn);
+  		this.$el.append('<h1>').html('Unassigned Tasks') 
+      this.$el.append(btn);
 
       for(var i = 0; i < app.tasks.length; i++){
-        if(app.tasks.at(i).get('status') == 'unassigned' || app.tasks.at(i).get('status') == ''){
-          var viewB = new TaskView({index: i, model: app.tasks.at(i)});
+        
+        var status = app.tasks.at(i).get('status');
+        var assignee = app.tasks.at(i).get('assignee');
+
+        if((status === 'unassigned' || status === '') && assignee === ''){
+          console.log('ive entered the if loop');
+          var viewB = new TaskView({model: app.tasks.at(i)});
           this.$el.append(viewB.$el);
         }
       }
     },
-    changeBack: function() {
-      this.model.set({'assignee' : ''});
-      this.model.set({'status' : 'unassigned'});
-      console.log("Unclaiming A Task");
-    },
-    complete: function() {
-      console.log("Task Completed");
-      this.model.set({'status' : 'completed'});
-      this.addDiv();
-    },
-    addDiv: function() {
-      console.log("Adding Div");
-      this.remove();
-      this.initialize();
-    },
     events: {
-  			'click #newTask' : 'newTask'
+  		'click #newTask' : 'newTask'
   	},
 
     newTask: function () {
       var addTask = new AddTaskView();
       addTask.render();
+      this.$el.append(addTask.$el);
     }
   });
 
@@ -208,15 +205,15 @@ var GUI = (function(){ //IIFE for all Views
 
       for(var i = 0; i < app.tasks.length; i++){
         if(app.tasks.at(i).get('assignee') == app.currentUser){
-          var viewB = new TaskView({index: i, model: app.tasks.at(i)});
+          var viewB = new TaskView({model: app.tasks.at(i)});
           this.$el.append(viewB.$el);
         }
     }
 
   	},
   	initialize: function () {
-      this.listenTo(app.tasks, 'update', this.removeTask);
-			this.listenTo(app.tasks, 'change', this.removeTask);
+      this.listenTo(app.tasks, 'change', this.render);
+      this.listenTo(app.tasks, 'update', this.render);
   	},
   	events : {
   	},
@@ -241,15 +238,15 @@ var GUI = (function(){ //IIFE for all Views
 
       for(var i = 0; i < app.tasks.length; i++){
         if(app.tasks.at(i).get('assignee') ){
-          var viewB = new TaskView({index: i, model: app.tasks.at(i)});
+          var viewB = new TaskView({model: app.tasks.at(i)});
           this.$el.append(viewB.$el);
         }
     }
 
     },
     initialize: function () {
-      this.listenTo(app.tasks, 'update', this.removeTask);
-      this.listenTo(app.tasks, 'change', this.removeTask);
+      this.listenTo(app.tasks, 'change', this.render);
+      this.listenTo(app.tasks, 'update', this.render);
     },
     events : {
     },
@@ -258,7 +255,42 @@ var GUI = (function(){ //IIFE for all Views
 
 
 //=============================================
-// 5. UserView:
+// 6. CompletedTasksView :
+//    View for tasks filtered by active user
+//    Called by :
+//      UserView
+//=============================================
+
+  var CompletedTasksView = Backbone.View.extend({
+    tagName: 'div',
+    className: 'CompletedTasksView',
+
+    render: function () {
+      // var usernames = UserModel.model.get("value");
+      console.log('CompletedTasksView');
+      this.$el.html('<h1>Assigned Tasks</h1>');
+
+      for(var i = 0; i < app.tasks.length; i++){
+        if(app.tasks.at(i).get('status') === 'completed' ){
+          var viewB = new TaskView({model: app.tasks.at(i)});
+          this.$el.append(viewB.$el);
+        }
+      }
+    },
+
+    initialize: function () {
+      this.listenTo(app.tasks, 'change', this.render);
+      this.listenTo(app.tasks, 'update', this.render);
+    },
+
+    events : {
+    }
+
+  });
+
+
+//=============================================
+// 7. UserView:
 //      View for whole page after logging in
 //    Called by :
 //      LoginView
@@ -268,17 +300,14 @@ var GUI = (function(){ //IIFE for all Views
     id : 'UserView',
   	render: function() {
 			var logout = '<button id = "logout">Log-Out</button>';
-			var header = '<h1>Welcome, '+app.currentUser+'!</h1>';
+			var header = '<h1>Welcome, '+ app.currentUser + '!</h1>';
 			
-      //var userTasksViewHeader = '<h1>User Tasks View</h1>';
 			var userTasksView = new UserTasksView();
 			userTasksView.render();
 			
-      //var unassignedTasksViewHeader = '<h1>Unassigned Tasks View</h1>';
 			var unassignedTasksView = new UnassignedTasksView();
 			unassignedTasksView.render();
 
-      //var assignedTasksViewHeader = '<h1>Unassigned Tasks View</h1>';
       var assignedTasksView = new AssignedTasksView();
       assignedTasksView.render();
 
@@ -287,10 +316,15 @@ var GUI = (function(){ //IIFE for all Views
       this.$el.append(userTasksView.$el);
       this.$el.append(assignedTasksView.$el);
       this.$el.prepend( stuff );
-	},
+	  },
+
+    initialize : function() {
+    },
+
   	events: {
   		"click #logout" : "logout"
   	},
+
   	logout: function() {
   		console.log("logging out");
   		// this.$el.empty();
@@ -302,7 +336,7 @@ var GUI = (function(){ //IIFE for all Views
 
 
 //=============================================
-// 6. LoginView :
+// 8. LoginView :
 //      View for initial login page
 //    Called by :
 //      GUI
@@ -350,7 +384,7 @@ var LoginView = Backbone.View.extend({
 
 
 //=============================================
-// 7. GUI
+// 9. GUI
 //    Function that builds everything at the end
 //=============================================
 
