@@ -84,7 +84,7 @@ var TaskView = Backbone.View.extend({
 
 var UnassignedTasksView = Backbone.View.extend({
 	tagName: 'div',
-	className: 'appendThisThingPlease',
+	className: 'UnassignedTasksView',
 	initialize: function () {
     this.listenTo(app.tasks, 'change', this.render);
 },
@@ -114,6 +114,9 @@ var UnassignedTasksView = Backbone.View.extend({
 
 
   var UserTasksView = Backbone.View.extend({
+    tagName: 'div',
+  	className: 'UserTasksView',
+
   	render: function () {
 			// var usernames = UserModel.model.get("value");
       console.log('UserTasksView');
