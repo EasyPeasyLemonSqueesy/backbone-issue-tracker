@@ -116,6 +116,7 @@ var UnassignedTasksView = Backbone.View.extend({
   var UserTasksView = Backbone.View.extend({
   	render: function () {
 			// var usernames = UserModel.model.get("value");
+      console.log('UserTasksView');
 			var btn = '<button id="removeTask">Remove A Task</button>';
 			this.$el.html('<h1>User Tasks</h1>' + btn);
 
@@ -128,13 +129,14 @@ var UnassignedTasksView = Backbone.View.extend({
 
   	},
   	initialize: function () {
-			this.listenTo(app.tasks, 'change', this.render);
+			this.listenTo(app.tasks, 'change', this.removeTask);
   	},
   	events : {
   		'click #removeTask' : 'removeTask'
   	},
   	removeTask: function () {
   		console.log('pushed removeTask button');
+      this.render();
   	},
 
   });
