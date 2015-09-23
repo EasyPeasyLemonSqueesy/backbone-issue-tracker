@@ -1,7 +1,5 @@
 var GUI = (function(){ //IIFE for all Views
 
-  var currentUser = this.currentUser;
-
   var AddTask = Backbone.View.extend({
     className: 'modal',
 
@@ -37,40 +35,46 @@ var GUI = (function(){ //IIFE for all Views
       $('#app').removeClass('faded');
     }
   });
+var TaskView = Backbone.View.extend({
+  tagName: 'p',
+  className: 'task',
 
-  var TaskView = Backbone.View.extend({
-    tagName: 'p',
-    className: 'task',
-    render: function(){
-      console.log('RENDER TaskView!!\n===================');
-      console.log('the model im rendering is ', this.model.get('title'));
-      var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status');
-      this.$el.html(description);
-    },
-    initialize: function(){
-    },
-    events : {
-      $('#app').append(this.$el);
-    }
-  });
+  render: function(){
 
-  var UnassignedTasksView = Backbone.View.extend({
-  	render: function () {
-			// var usernames = UserModel.model.get("value");
-			var btn = '<button id="newTask">New</button>';
-			this.$el.html('<h1>Unassigned Tasks</h1>' + btn);
-  	},
-  	initialize: function () {
-			this.listenTo(app.tasks, 'change', this.render);
-			this.render();
-  	},
-  	events : {
+    var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br>';
+
+    this.$el.html(description);
+  },
+
+  initialize: function(options){
+    this.index = options.index;
+    this.render();
+  }
+});
+
+var UnassignedTasksView = Backbone.View.extend({
+	tagName: 'div',
+	className: 'appendThisThingPlease',
+	initialize: function () {
+    this.listenTo(app.tasks, 'change', this.render);
+},
+
+  render: function () {
+		var btn = '<button id="newTask">New</button>';
+		this.$el.html('<h1>Unassigned Tasks</h1>'+ btn);
+
+    for(var i = 0; i < app.tasks.length; i++){
+      var viewB = new TaskView({index: i, model: app.tasks.at(i)});
+      this.$el.append(viewB.$el);
+  }
+},
+
+	events : {
 			'click #newTask' : 'newTask'
-  	},
-  	newTask: function () {
-  		console.log('pushed NewTask button');
-  	},
-  });
+	},
+
+});
+
 
   var UserTasksView = Backbone.View.extend({
   	render: function () {
@@ -105,76 +109,74 @@ var GUI = (function(){ //IIFE for all Views
       this.$el.append(unassignedTasksView.$el);
       this.$el.append(userTasksView.$el);
       this.$el.prepend( stuff );
-  	},
-  	events: {
-  		"click #logout" : "logout"
-  	},
-  	logout: function() {
-  		console.log("logging out");
-  		// this.$el.empty();
-      $('#app').html('');
-  		app.gui.switchToLogin();
-  	}
-  });
+	},
+	events: {
+		"click #logout" : "logout"
+	},
+	logout: function() {
+		console.log("logging out");
+		// this.$el.empty();
+    $('#app').html('');
+		app.gui.switchToLogin();
+	}
+});
 
-  var LoginView = Backbone.View.extend({
-  	render: function() {
-  		var button = '<button id = "login">Login</button>';
-  		console.log(app.users.pluck("username"));
-  		var users = app.users.pluck("username");
-  		var dropdown = '<select id = "dropdown">'
-      users.forEach(function(element){dropdown += "<option>"+element+"</option>";})
-  		dropdown += ('</select>');
-  		var title = '<h1>Please Choose A Username</h1>';
-  		var all =  title + dropdown + button;
-  		this.$el.html(  all );
-  	},
-  	delete: function() {
-  			this.$el.html('');
+var LoginView = Backbone.View.extend({
+	render: function() {
+		var button = '<button id = "login">Login</button>';
+		var users = app.users.pluck("username");
+		var dropdown = '<select id = "dropdown">'
+    users.forEach(function(element){dropdown += "<option>"+element+"</option>";})
+		dropdown += ('</select>');
+		var title = '<h1>Please Choose A Username</h1>';
+		var all =  title + dropdown + button;
+		this.$el.html(  all );
+	},
+	delete: function() {
+			this.$el.html('');
+	},
+	initialize: function() {
+		console.log("initializing");
+		// this.on("logout", this.delete, this);
 
-  	},
-  	initialize: function() {
-  		console.log("initializing");
-  		// this.on("logout", this.delete, this);
+	},
+	events: {
+		"click #logout" : "logout",
+		"click #login" : "login"
+	},
+	login: function() {
+		app.currentUser = $('#dropdown').val();
+		console.log(app.currentUser);
+		console.log("loging in");
+    this.remove();
+			app.gui.switchToUser();
+	},
+	logout: function() {
+		console.log("logging out");
+		this.$el.empty();
+		this.remove();
+		app.gui.switchToLogin();
+	}
 
-  	},
-  	events: {
-  		"click #logout" : "logout",
-  		"click #login" : "login"
-  	},
-  	login: function() {
-  		app.currentUser = $('#dropdown').val();
-  		console.log(app.currentUser);
-  		console.log("loging in");
-      this.remove();
-  			app.gui.switchToUser();
-  	},
-  	logout: function() {
-  		console.log("logging out");
-  		this.$el.empty();
-  		this.remove();
-  		app.gui.switchToLogin();
-  	}
-
-  });
+});
 
 
-  // generic ctor to represent interface:
-  function GUI(users,tasks,el) {
-
-  	this.switchToUser = function (){
-  		var userView = new UserView();
-  		userView.render();
-  		$('#app').append(userView.$el);
-  	};
-  	this.switchToLogin = function() {
-  		var login = new LoginView();
-  		login.render();
-  		$("#app").append(login.$el);
-    };
-
+// generic ctor to represent interface:
+function GUI(users,tasks,el) {
+	this.switchToUser = function (){
+		var userView = new UserView();
+		userView.render();
+		$('#app').append(userView.$el);
+	};
+	 this.switchToLogin = function() {
+		 var login = new LoginView();
+		 login.render();
+		 $("#app").append(login.$el);
+   };
+	  var currentUser = this.currentUser;
     this.switchToLogin();
-  }
+}
+
 
   return GUI;
 })();
