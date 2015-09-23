@@ -10,7 +10,7 @@ var GUI = (function(){ //IIFE for all Views
       //var $creator = $();
       //var $assignee = $();
       //var $status = $();
-      var $submit = $('<button class="submit">');
+      var $submit = $('<button class="submit">Submit</button>');
       $form.append([$title, $description, $submit] )
       this.$el.html($form);
     },
@@ -41,7 +41,7 @@ var TaskView = Backbone.View.extend({
 
   render: function(){
 
-    var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br>';
+    var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br> <button id="claim">Claim This Task</button>';
 
     this.$el.html(description);
   },
@@ -49,6 +49,16 @@ var TaskView = Backbone.View.extend({
   initialize: function(options){
     this.index = options.index;
     this.render();
+  },
+  events: {
+    'click #claim' : 'change'
+  },
+  change: function() {
+    console.log("Claiming A Task");
+    // this.model.set('assignee') = app.currentUser;
+    this.model.set({'assignee' : app.currentUser});
+    this.model.set({'status' : 'assigned'});
+    console.log(this.model.get('status'));
   }
 });
 
@@ -60,7 +70,7 @@ var UnassignedTasksView = Backbone.View.extend({
 },
 
   render: function () {
-		var btn = '<button id="newTask">New</button>';
+		var btn = '<button id="newTask">Create A New Task</button>';
 		this.$el.html('<h1>Unassigned Tasks</h1>'+ btn);
 
     for(var i = 0; i < app.tasks.length; i++){
@@ -74,6 +84,11 @@ var UnassignedTasksView = Backbone.View.extend({
 	events : {
 			'click #newTask' : 'newTask'
 	},
+  newTask: function () {
+    var addTask = new AddTask();
+    addTask.render();
+    this.$el.append(addTask.$el);
+  }
 
 });
 
@@ -81,7 +96,7 @@ var UnassignedTasksView = Backbone.View.extend({
   var UserTasksView = Backbone.View.extend({
   	render: function () {
 			// var usernames = UserModel.model.get("value");
-			var btn = '<button id="removeTask">New</button>';
+			var btn = '<button id="removeTask">Remove A Task</button>';
 			this.$el.html('<h1>User Tasks</h1>' + btn);
 
       for(var i = 0; i < app.tasks.length; i++){
@@ -155,7 +170,6 @@ var LoginView = Backbone.View.extend({
 	},
 	login: function() {
 		app.currentUser = $('#dropdown').val();
-		console.log(app.currentUser);
 		console.log("loging in");
     this.remove();
 			app.gui.switchToUser();
