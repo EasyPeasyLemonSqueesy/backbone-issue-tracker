@@ -86,7 +86,7 @@ var GUI = (function(){ //IIFE for all Views
       dropdown += '</form>';
       var $complete = $('<button class="btn-complete">').html('complete');
 
-      var task = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br>';
+      var task = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br><br>';
 
       this.$el.html(task);
       this.$el.append([$unclaim, $claim, dropdown, $complete]);
@@ -166,7 +166,7 @@ var AssignToView = Backbone.View.extend({
 
   var UnassignedTasksView = Backbone.View.extend({
   	tagName: 'div',
-  	className: 'UnassignedTasksView',
+  	className: 'UnassignedTasksView column',
 
   	initialize: function () {
       this.listenTo( app.tasks, 'change', this.render);
@@ -175,10 +175,8 @@ var AssignToView = Backbone.View.extend({
 
     render: function () {
       console.log('ive entered the rendering phase');
-  		var btn = '<button id="newTask">Create A New Task</button>';
-  		this.$el.append('<h1>').html('Unassigned Tasks')
-      this.$el.append(btn);
-
+  		var $h1 = $('<h1>').html('Unassigned Tasks');
+      this.$el.append($h1);
       for(var i = 0; i < app.tasks.length; i++){
 
         var status = app.tasks.at(i).get('status');
@@ -190,15 +188,6 @@ var AssignToView = Backbone.View.extend({
           this.$el.append(viewB.$el);
         }
       }
-    },
-    events: {
-  		'click #newTask' : 'newTask'
-  	},
-
-    newTask: function () {
-      var addTask = new AddTaskView();
-      addTask.render();
-      this.$el.append(addTask.$el);
     }
   });
 
@@ -212,7 +201,7 @@ var AssignToView = Backbone.View.extend({
 
   var UserTasksView = Backbone.View.extend({
     tagName: 'div',
-  	className: 'UserTasksView',
+  	className: 'UserTasksView column',
 
   	render: function () {
 			// var usernames = UserModel.model.get("value");
@@ -245,7 +234,7 @@ var AssignToView = Backbone.View.extend({
 
   var AssignedTasksView = Backbone.View.extend({
     tagName: 'div',
-    className: 'AssignedTasksView',
+    className: 'AssignedTasksView column',
 
     render: function () {
       // var usernames = UserModel.model.get("value");
@@ -279,7 +268,7 @@ var AssignToView = Backbone.View.extend({
 
   var CompletedTasksView = Backbone.View.extend({
     tagName: 'div',
-    className: 'CompletedTasksView',
+    className: 'CompletedTasksView column',
 
     render: function () {
       // var usernames = UserModel.model.get("value");
@@ -315,8 +304,13 @@ var AssignToView = Backbone.View.extend({
   var UserView = Backbone.View.extend({
     id : 'UserView',
   	render: function() {
-			var logout = '<button id = "logout">Log-Out</button>';
-			var header = '<h1>Welcome, '+ app.currentUser + '!</h1>';
+			var $header   = $('<div id="greeting">')
+      var greeting = '<h1>Welcome, '+ app.currentUser + '!</h1>';
+      var logout   = '<button id = "logout">Log-Out</button>';
+      var btn = '<button id="newTask">Create A New Task</button>';
+
+      $header.append([greeting, logout]);
+			var $row     = $('<div id="row">');
 
 			var userTasksView = new UserTasksView();
 			userTasksView.render();
@@ -330,13 +324,27 @@ var AssignToView = Backbone.View.extend({
       var completedTasksView = new CompletedTasksView();
       completedTasksView.render();
 
-			var stuff = header + logout;
-      this.$el.append(unassignedTasksView.$el);
-      this.$el.append(userTasksView.$el);
-      this.$el.append(assignedTasksView.$el);
-      this.$el.append(completedTasksView.$el);
-      this.$el.prepend( stuff );
+      $row.append(unassignedTasksView.$el);
+      $row.append(userTasksView.$el);
+      $row.append(assignedTasksView.$el);
+      $row.append(completedTasksView.$el);
+
+      this.$el.prepend( $header );
+      this.$el.append($row);
+      this.$el.prepend( btn );
+      $('#app').append(this.$el);
 	  },
+
+    events: {
+      'click #newTask' : 'newTask'
+    },
+
+    newTask: function () {
+      console.log( 'newTask' )
+      var addTask = new AddTaskView();
+      addTask.render();
+      this.$el.append(addTask.$el);
+    },
 
     initialize : function() {
     },
