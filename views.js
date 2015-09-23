@@ -1,32 +1,43 @@
 var GUI = (function(){ //IIFE for all Views
 
 var TaskView = Backbone.View.extend({
+  tagName: 'p',
+  className: 'task',
+
   render: function(){
-    console.log('RENDER TaskView!!\n===================')
-    console.log('the model im rendering is ', this.model.get('title'));
-    var description = '<p>'+ this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '</p>';
+
+    var description = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br>';
+
+    this.$el.html(description);
   },
-  initialize: function(){
-    $('#app').append(this)
+
+  initialize: function(options){
+    this.index = options.index;
+    this.render();
   }
 });
 
 var UnassignedTasksView = Backbone.View.extend({
-	render: function () {
-			// var usernames = UserModel.model.get("value");
-			var btn = '<button id="newTask">New</button>';
-			this.$el.html('<h1>Unassigned Tasks</h1>' + btn);
-	},
+	tagName: 'div',
+	className: 'appendThisThingPlease',
 	initialize: function () {
-			this.listenTo(app.tasks, 'change', this.render);
-			this.render();
-	},
+    this.listenTo(app.tasks, 'change', this.render);
+},
+
+  render: function () {
+		var btn = '<button id="newTask">New</button>';
+		this.$el.html('<h1>Unassigned Tasks</h1>'+ btn);
+
+    for(var i = 0; i < app.tasks.length; i++){
+      var viewB = new TaskView({index: i, model: app.tasks.at(i)});
+      this.$el.append(viewB.$el);
+  }
+},
+
 	events : {
 			'click #newTask' : 'newTask'
 	},
-	newTask: function () {
-		console.log('pushed NewTask button');
-	},
+
 });
 
 var UserTasksView = Backbone.View.extend({
@@ -48,51 +59,48 @@ var UserTasksView = Backbone.View.extend({
 });
 
 var UserView = Backbone.View.extend({
-
+	render: function() {
+			var logout = '<button id = "logout">Log-Out</button>';
+			var header = '<h1>Welcome, '+app.currentUser+'!</h1>';
+			var userTasksViewHeader = '<h1>User Tasks View</h1>';
+			var userTasksView = new UserTasksView();
+			userTasksView.render();
+			var unassignedTasksViewHeader = '<h1>Unassigned Tasks View</h1>';
+			var unassignedTasksView = new UnassignedTasksView();
+			unassignedTasksView.render();
+			var stuff = header + logout;
+      this.$el.append(unassignedTasksView.$el);
+      this.$el.append(userTasksView.$el);
+      this.$el.prepend( stuff );
+	},
+	events: {
+		"click #logout" : "logout"
+	},
+	logout: function() {
+		console.log("logging out");
+		// this.$el.empty();
+    $('#app').html('');
+		app.gui.switchToLogin();
+	}
 });
 
 var LoginView = Backbone.View.extend({
 	render: function() {
-		// this.remove();
 		var button = '<button id = "login">Login</button>';
-		console.log(app.users.pluck("username"));
 		var users = app.users.pluck("username");
-		// var logout = '<button id = "logout">Log-Out</button>';
 		var dropdown = '<select id = "dropdown">'
-		users.forEach(function(element){dropdown += "<option>"+element+"</option>";})
+    users.forEach(function(element){dropdown += "<option>"+element+"</option>";})
 		dropdown += ('</select>');
-
 		var title = '<h1>Please Choose A Username</h1>';
 		var all =  title + dropdown + button;
 		this.$el.html(  all );
 	},
-	rerender: function() {
-		console.log("re-rendering");
-
-		this.$el.empty();
-		// this.$el.append( this.subView.render().el );
-
-		var logout = '<button id = "logout">Log-Out</button>';
-
-		var header = '<h1>Welcome, '+this.currentUser+'!</h1>';
-		var stuff =  this.$el.html ( header + logout);
-		$('#app').append(stuff);
-		var unassigned = new UnassignedTasksView();
-		var usertasks = new UserTasksView();
-		unassigned.render();
-		usertasks.render();
-		$('#app').append(unassigned.$el);
-		$('#app').append(usertasks.$el);
-		// this.subView.delegateEvents();
-
-
-	},
 	delete: function() {
-			this.remove();
+			this.$el.html('');
 	},
 	initialize: function() {
 		console.log("initializing");
-		this.on("logout", this.delete, this);
+		// this.on("logout", this.delete, this);
 
 	},
 	events: {
@@ -100,20 +108,14 @@ var LoginView = Backbone.View.extend({
 		"click #login" : "login"
 	},
 	login: function() {
-		this.currentUser = $('#dropdown').val();
-		// console.log(this.currentUser);
-		console.log("loging in");
-			// this.undelegateEvents();
-	    // this.$el.removeData().unbind();
-			// Backbone.View.prototype.remove.call(this);
-			this.rerender();
+		app.currentUser = $('#dropdown').val();
+	  this.remove();
+			app.gui.switchToUser();
 	},
 	logout: function() {
-		console.log("logging out");
-		// unassigned.remove();
-		// usertasks.remove();
-		this.delete();
-		this.render();
+		this.$el.empty();
+		this.remove();
+		app.gui.switchToLogin();
 	}
 
 });
@@ -122,21 +124,38 @@ var LoginView = Backbone.View.extend({
 // generic ctor to represent interface:
 function GUI(users,tasks,el) {
 
-	var login = new LoginView();
-	login.render();
-	$("#app").append(login.$el);
-	console.log( 'CONSTRUCTION gui\n===================')
+	// users is collection of User models
+	// tasks is collection of Task models
+	// el is selector for where GUI connects in DOM
+	this.switchToUser = function (){
+		var userView = new UserView();
+		userView.render();
+		$('#app').append(userView.$el);
+	};
+	 this.switchToLogin = function() {
+		 var login = new LoginView();
+		 login.render();
+		 $("#app").append(login.$el);
+};
+	var currentUser = this.currentUser;
+this.switchToLogin();
+
+// =======
+//
+// 	var login = new LoginView();
+// 	login.render();
+// 	$("#app").append(login.$el);
+// 	console.log( 'CONSTRUCTION gui\n===================')
+// >>>>>>> TaskView
 
   // users is collection of User models: app.users
   //===================================
 
   // tasks is collection of Task models: app.tasks
   //===================================
-  console.log( 'the task collection is: ', tasks);
 
   // el is selector for where GUI connects in DOM: #app
   //===================================
-  console.log('GUI thinks el is ', el);
 
 
 
@@ -144,20 +163,15 @@ function GUI(users,tasks,el) {
   //===================================
 
 
-  tasks.each( function(task){
 
-    console.log('LOOP tasks.each!!\n=================\n the current task is =>', task);
+  // tasks.each( function(task){
 
-    console.log( 'task.title: "', task.get('title'), '"' );
 
-    var issue = new TaskView({ model : task });
 
-    console.log('renamed it issue: ', issue)
-    issue.render();
 
-  })
+  // })
+
 }
-
 return GUI;
-}()
-);
+
+})();
