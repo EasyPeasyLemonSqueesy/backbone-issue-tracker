@@ -50,7 +50,7 @@ var GUI = (function(){ //IIFE for all Views
         title : this.$el.find('#title').val(),
         description : this.$el.find('#description').val(),
         creator : app.currentUser
-      }
+      };
 
       console.log( 'add this task: ', task);
 
@@ -137,7 +137,7 @@ var GUI = (function(){ //IIFE for all Views
 
   var UnassignedTasksView = Backbone.View.extend({
   	tagName: 'div',
-  	className: 'appendThisThingPlease',
+  	className: 'UnassignedTasksView',
   	initialize: function () {
       this.listenTo(app.tasks, 'change', this.render);
 
@@ -149,30 +149,30 @@ var GUI = (function(){ //IIFE for all Views
 
       for(var i = 0; i < app.tasks.length; i++){
         if(app.tasks.at(i).get('status') == 'unassigned'){
-        var viewB = new TaskView({index: i, model: app.tasks.at(i)});
-        this.$el.append(viewB.$el);
+          var viewB = new TaskView({index: i, model: app.tasks.at(i)});
+          this.$el.append(viewB.$el);
+        }
       }
-    }
-  },
-  changeBack: function() {
-    this.model.set({'assignee' : ''});
-    this.model.set({'status' : 'unassigned'});
-    console.log("Unclaiming A Task");
-  },
-  complete: function() {
-    console.log("Task Completed");
-    this.model.set({'status' : 'completed'});
-    this.addDiv();
-  },
-  addDiv: function() {
-    console.log("Adding Div");
-    this.remove();
-    this.initialize();
-  },
-
-  	events : {
+    },
+    changeBack: function() {
+      this.model.set({'assignee' : ''});
+      this.model.set({'status' : 'unassigned'});
+      console.log("Unclaiming A Task");
+    },
+    complete: function() {
+      console.log("Task Completed");
+      this.model.set({'status' : 'completed'});
+      this.addDiv();
+    },
+    addDiv: function() {
+      console.log("Adding Div");
+      this.remove();
+      this.initialize();
+    },
+    events: {
   			'click #newTask' : 'newTask'
   	},
+
     newTask: function () {
       var addTask = new AddTaskView();
       addTask.render();
@@ -189,6 +189,9 @@ var GUI = (function(){ //IIFE for all Views
 //=============================================
 
   var UserTasksView = Backbone.View.extend({
+    tagName: 'div',
+  	className: 'UserTasksView',
+
   	render: function () {
 			// var usernames = UserModel.model.get("value");
       console.log('UserTasksView');
@@ -265,7 +268,7 @@ var LoginView = Backbone.View.extend({
 		var button = '<button id = "login">Login</button>';
 		var users = app.users.pluck("username");
 		var dropdown = '<select id = "dropdown">';
-    users.forEach(function(element){dropdown += "<option>"+element+"</option>";})
+    users.forEach(function(element){dropdown += "<option>"+element+"</option>";});
 		dropdown += ('</select>');
 		var title = '<h1>Please Choose A Username</h1>';
 		var all =  title + dropdown + button;
@@ -322,5 +325,5 @@ function GUI(users,tasks,el) {
 
 
   return GUI;
-}
-)();
+
+})();
