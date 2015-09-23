@@ -15,7 +15,7 @@ var GUI = (function(){ //IIFE for all Views
 
 
 //=============================================
-// 1. AddTaskView : 
+// 1. AddTaskView :
 //      Modal view for adding a task to the model
 //    Called by :
 //      UnassignedTaskView
@@ -65,7 +65,7 @@ var GUI = (function(){ //IIFE for all Views
 
 
 //=============================================
-// 2. TaskView : 
+// 2. TaskView :
 //      View for an individual task
 //    Called by :
 //      UnassignedTaskView
@@ -122,34 +122,35 @@ var GUI = (function(){ //IIFE for all Views
 
 
 //=============================================
-// 3. UnassignedTasksView: 
+// 3. UnassignedTasksView:
 //      View for all unassigned
-//    Called by : 
+//    Called by :
 //      UserView
 //=============================================
 
-  var UnassignedTasksView = Backbone.View.extend({
-  	tagName: 'div',
-  	className: 'appendThisThingPlease',
-  	initialize: function () {
-      this.listenTo(app.tasks, 'change', this.render);
-  },
+var UnassignedTasksView = Backbone.View.extend({
+	tagName: 'div',
+	className: 'UnassignedTasksView',
+	initialize: function () {
+    this.listenTo(app.tasks, 'change', this.render);
+},
 
-    render: function () {
-  		var btn = '<button id="newTask">Create A New Task</button>';
-  		this.$el.html('<h1>Unassigned Tasks</h1>'+ btn);
+  render: function () {
+		var btn = '<button id="newTask">Create A New Task</button>';
+		this.$el.html('<h1>Unassigned Tasks</h1>'+ btn);
 
-      for(var i = 0; i < app.tasks.length; i++){
-        if(app.tasks.at(i).get('status') == 'unassigned'){
-        var viewB = new TaskView({index: i, model: app.tasks.at(i)});
-        this.$el.append(viewB.$el);
-      }
+    for(var i = 0; i < app.tasks.length; i++){
+      if(app.tasks.at(i).get('status') == 'unassigned'){
+      var viewB = new TaskView({index: i, model: app.tasks.at(i)});
+      this.$el.append(viewB.$el);
     }
-  },
+  }
+},
 
-  	events : {
+    events: {
   			'click #newTask' : 'newTask'
   	},
+
     newTask: function () {
       var addTask = new AddTaskView();
       addTask.render();
@@ -160,13 +161,16 @@ var GUI = (function(){ //IIFE for all Views
 
 
 //=============================================
-// 4. UserTasksView : 
+// 4. UserTasksView :
 //    View for tasks filtered by active user
-//    Called by : 
+//    Called by :
 //      UserView
 //=============================================
 
   var UserTasksView = Backbone.View.extend({
+    tagName: 'div',
+  	className: 'UserTasksView',
+
   	render: function () {
 			// var usernames = UserModel.model.get("value");
       console.log('UserTasksView');
@@ -199,7 +203,7 @@ var GUI = (function(){ //IIFE for all Views
 //=============================================
 // 5. UserView:
 //      View for whole page after logging in
-//    Called by : 
+//    Called by :
 //      LoginView
 //=============================================
 
@@ -234,7 +238,7 @@ var GUI = (function(){ //IIFE for all Views
 //=============================================
 // 6. LoginView :
 //      View for initial login page
-//    Called by : 
+//    Called by :
 //      GUI
 //=============================================
 
