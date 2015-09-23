@@ -2,7 +2,42 @@
   border: 1px solid black;
   background: #2f6fff;
 }
-
+div {
+  width: 300px;
+}
 .faded {
   background: lightgray;
+}
+
+#complete {
+  background: lightgray;
+  border: solid 1px black;
+}
+
+#complete {
+    position: relative;
+    background: gray;
+    padding: 30px;
+    overflow: hidden;
+}
+
+#complete:before, #complete:after {
+    position: absolute;
+    content: '';
+    background: red;
+    display: block;
+    width: 100%;
+    height: 30px;
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+#complete:after {
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
 }
