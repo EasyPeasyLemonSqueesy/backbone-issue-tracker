@@ -16,7 +16,9 @@ var GUI = (function(){ //IIFE for all Views
 
 //=============================================
 // 1. AddTaskView : 
-//    Modal view for adding a task to the model
+//      Modal view for adding a task to the model
+//    Called by :
+//      UnassignedTaskView
 //=============================================
 
   var AddTaskView = Backbone.View.extend({
@@ -24,9 +26,9 @@ var GUI = (function(){ //IIFE for all Views
 
     render: function(){
       var $form = $('<form>');
-      var $title = $('<input type="text" name="title" class="title" placholder="task title">');
-      var $description = $('<input type="text" name="description" class="description" placholder="task title">');
-      var $submit = $('<button class="submit">Submit</button>');
+      var $title = $('<input type="text" name="title" id="title" placholder="task title">');
+      var $description = $('<input type="text" name="description" id="description" placholder="task title">');
+      var $submit = $('<button id="submit">Submit</button>');
       $form.append([$title, $description, $submit] )
       this.$el.html($form);
     },
@@ -38,16 +40,23 @@ var GUI = (function(){ //IIFE for all Views
     },
 
     events: {
-      'click .submit' : 'addTask'
+      'click #submit' : 'addTask'
     },
 
-    addTask : function() {
+    addTask : function(event) {
+      event.preventDefault();
+
       var task = {
-        title : $(this).closest('.title').html(),
-        description : $(this).closest('.description').html(),
+        title : this.$el.find('#title').val(),
+        description : this.$el.find('#description').val(),
         creator : app.currentUser
       }
+
+      console.log( 'add this task: ', task);
+
+      console.log( 'app.tasks before changes: ', app.tasks );
       app.tasks.add( task );
+      console.log( 'app.tasks after changes: ', app.tasks );
 
       $('#app').removeClass('faded');
     }
@@ -57,7 +66,10 @@ var GUI = (function(){ //IIFE for all Views
 
 //=============================================
 // 2. TaskView : 
-//    View for an individual task
+//      View for an individual task
+//    Called by :
+//      UnassignedTaskView
+//      UserTaskView
 //=============================================
 
   var TaskView = Backbone.View.extend({
@@ -111,7 +123,9 @@ var GUI = (function(){ //IIFE for all Views
 
 //=============================================
 // 3. UnassignedTasksView: 
-//    View for all unassigned
+//      View for all unassigned
+//    Called by : 
+//      UserView
 //=============================================
 
   var UnassignedTasksView = Backbone.View.extend({
@@ -148,6 +162,8 @@ var GUI = (function(){ //IIFE for all Views
 //=============================================
 // 4. UserTasksView : 
 //    View for tasks filtered by active user
+//    Called by : 
+//      UserView
 //=============================================
 
   var UserTasksView = Backbone.View.extend({
@@ -182,7 +198,9 @@ var GUI = (function(){ //IIFE for all Views
 
 //=============================================
 // 5. UserView:
-//    View for whole page after logging in
+//      View for whole page after logging in
+//    Called by : 
+//      LoginView
 //=============================================
 
   var UserView = Backbone.View.extend({
@@ -215,7 +233,9 @@ var GUI = (function(){ //IIFE for all Views
 
 //=============================================
 // 6. LoginView :
-//    View for initial login page
+//      View for initial login page
+//    Called by : 
+//      GUI
 //=============================================
 
 var LoginView = Backbone.View.extend({
