@@ -10,6 +10,7 @@ var GUI = (function(){ //IIFE for all Views
 //  5. UserView
 //  6. LoginView
 //  7. GUI
+//
 //=============================================
 
 
