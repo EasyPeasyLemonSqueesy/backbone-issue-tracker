@@ -1,5 +1,40 @@
 var GUI = (function(){ //IIFE for all Views
 
+  var AddTask = Backbone.View.extend({
+    className: 'modal',
+
+    render: function(){
+      var $form = $('<form>');
+      var $title = $('<input type="text" name="title" class="title">');
+      var $description = $('<input type="text" name="description" class="description">');
+      //var $creator = $();
+      //var $assignee = $();
+      //var $status = $();
+      var $submit = $('<button class="submit">');
+      $form.append([$title, $description, $submit] )
+      this.$el.html($form);
+    },
+
+    initialize: function(){
+      $('#app').addClass('faded');
+      $('body').append(this.$el);
+    },
+
+    events: {
+      'click .submit' : 'addTask'
+    },
+
+    addTask : function() {
+      var task = {
+        title : $(this).closest('.title').html(),
+        description : $(this).closest('.description').html(),
+        creator : app.currentUser
+      }
+      app.tasks.add( task );
+
+      $('#app').removeClass('faded');
+    }
+  });
 var TaskView = Backbone.View.extend({
   tagName: 'p',
   className: 'task',
@@ -40,27 +75,28 @@ var UnassignedTasksView = Backbone.View.extend({
 
 });
 
-var UserTasksView = Backbone.View.extend({
-	render: function () {
+
+  var UserTasksView = Backbone.View.extend({
+  	render: function () {
 			// var usernames = UserModel.model.get("value");
 			var btn = '<button id="removeTask">New</button>';
 			this.$el.html('<h1>User Tasks</h1>' + btn);
-	},
-	initialize: function () {
+  	},
+  	initialize: function () {
 			this.listenTo(app.tasks, 'change', this.render);
 			this.render();
-	},
-	events : {
-			'click #removeTask' : 'removeTask'
-	},
-	removeTask: function () {
-		console.log('pushed removeTask button');
-	},
+  	},
+  	events : {
+  		'click #removeTask' : 'removeTask'
+  	},
+  	removeTask: function () {
+  		console.log('pushed removeTask button');
+  	},
 
-});
+  });
 
-var UserView = Backbone.View.extend({
-	render: function() {
+  var UserView = Backbone.View.extend({
+  	render: function() {
 			var logout = '<button id = "logout">Log-Out</button>';
 			var header = '<h1>Welcome, '+app.currentUser+'!</h1>';
 			var userTasksViewHeader = '<h1>User Tasks View</h1>';
@@ -110,7 +146,6 @@ var LoginView = Backbone.View.extend({
 	},
 	login: function() {
 		app.currentUser = $('#dropdown').val();
-
 		console.log(app.currentUser);
 		console.log("loging in");
     this.remove();
@@ -128,10 +163,6 @@ var LoginView = Backbone.View.extend({
 
 // generic ctor to represent interface:
 function GUI(users,tasks,el) {
-
-	// users is collection of User models
-	// tasks is collection of Task models
-	// el is selector for where GUI connects in DOM
 	this.switchToUser = function (){
 		var userView = new UserView();
 		userView.render();
@@ -141,14 +172,11 @@ function GUI(users,tasks,el) {
 		 var login = new LoginView();
 		 login.render();
 		 $("#app").append(login.$el);
-};
-	var currentUser = this.currentUser;
-this.switchToLogin();
-
-
-
-
+   };
+	  var currentUser = this.currentUser;
+    this.switchToLogin();
 }
-return GUI;
 
+
+  return GUI;
 })();
