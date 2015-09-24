@@ -40,7 +40,7 @@ header {
 }
 
 .task {
-  background: #555;
+  background: #999;
   color: #ddd;
   padding: 5px;
   margin-bottom: 5px;
@@ -50,6 +50,7 @@ button {
   font-size: 16px;
   padding: 2px;
 }
+
 
 button#logout {
   float: right;
