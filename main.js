@@ -19,7 +19,7 @@ $(function() { //when DOM is ready...
 			title: 'Test the issue render',
 			description: 'make sure that the page can render tasks',
 			creator: 'Joseph',
-			assignee:'Nathan',
+			assignee:'Nathaniel',
 			status: 'assigned'
 		},
 		{
@@ -32,7 +32,7 @@ $(function() { //when DOM is ready...
 		{
 			title: 'Test the button',
 			description: 'make sure each task has a dropdown of statuses',
-			creator: 'Nate',
+			creator: 'Nathaniel',
 			assignee:'Adam',
 			status: 'assigned'
 		}

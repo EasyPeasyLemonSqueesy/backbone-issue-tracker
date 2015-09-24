@@ -69,7 +69,7 @@ var GUI = (function(){ //IIFE for all Views
 //      UnassignedTaskView
 //      UserTaskView
 //=============================================
-
+//Not working version with CSS:
   var TaskView = Backbone.View.extend({
     tagName: 'p',
     className: 'task',
@@ -138,58 +138,97 @@ var GUI = (function(){ //IIFE for all Views
     }
 });
 
-var AssignToView = Backbone.View.extend({
-  render: function() {
-    console.log("rendering AssignToView");
-    var users = app.users.pluck("username");
-    var dropdown = '<select id = "assignTo" onchange="this.form.submit()">';
-    users.forEach(function(element){dropdown += "<option>"+element+"</option>";});
-    dropdown += ('</select>');
-    var title = '<h1>Assign This Task To A User</h1>';
-    var all =  title + dropdown;
-    // this.$el.html(  all );
-    $('#app').append(all);
-  },
-  events: {
-    'click #assignTo' : 'assignTo'
-  },
-  assignTo : function() {
-    console.log("Button Works!");
-  }
-});
+// var AssignToView = Backbone.View.extend({
+//   render: function() {
+//     console.log("rendering AssignToView");
+//     var users = app.users.pluck("username");
+//     var dropdown = '<select id = "assignTo" onchange="this.form.submit()">';
+//     users.forEach(function(element){dropdown += "<option>"+element+"</option>";});
+//     dropdown += ('</select>');
+//     var title = '<h1>Assign This Task To A User</h1>';
+//     var all =  title + dropdown;
+//     // this.$el.html(  all );
+//     $('#app').append(all);
+//   },
+//   events: {
+//     'click #assignTo' : 'assignTo'
+//   },
+//   assignTo : function() {
+//     console.log("Button Works!");
+//   }
+// });
 //=============================================
 // 3. UnassignedTasksView:
 //      View for all unassigned
 //    Called by :
 //      UserView
 //=============================================
-
+//buggy version:
+  // var UnassignedTasksView = Backbone.View.extend({
+  // 	tagName: 'div',
+  // 	className: 'UnassignedTasksView column',
+  //
+  // 	initialize: function () {
+  //     this.listenTo( app.tasks, 'change', this.render);
+  //     this.listenTo( app.tasks, 'update', this.render);
+  //   },
+  //
+  //   render: function () {
+  //     console.log('ive entered the rendering phase');
+  // 		var $h1 = $('<h1>').html('Unassigned Tasks');
+  //     this.$el.append($h1);
+  //     for(var i = 0; i < app.tasks.length; i++){
+  //
+  //       var status = app.tasks.at(i).get('status');
+  //       var assignee = app.tasks.at(i).get('assignee');
+  //
+  //       if((status === 'unassigned' || status === '') && assignee === ''){
+  //         console.log('ive entered the if loop');
+  //         var viewB = new TaskView({model: app.tasks.at(i)});
+  //         this.$el.append(viewB.$el);
+  //       }
+  //     }
+  //   }
+  // });
+  //working version:
   var UnassignedTasksView = Backbone.View.extend({
-  	tagName: 'div',
-  	className: 'UnassignedTasksView column',
+    	tagName: 'div',
+    	className: 'UnassignedTasksView column',
 
-  	initialize: function () {
-      this.listenTo( app.tasks, 'change', this.render);
-      this.listenTo( app.tasks, 'update', this.render);
-    },
+    	initialize: function () {
+        this.listenTo( app.tasks, 'change', this.render);
+        this.listenTo( app.tasks, 'update', this.render);
+      },
 
-    render: function () {
-      console.log('ive entered the rendering phase');
-  		var $h1 = $('<h1>').html('Unassigned Tasks');
-      this.$el.append($h1);
-      for(var i = 0; i < app.tasks.length; i++){
+      render: function () {
+        console.log('ive entered the rendering phase');
+    		var btn = '<button id="newTask">Create A New Task</button>';
+        var header = '<h1>Unassigned Tasks</h1>';
+    		this.$el.append().html(header); // TODO: If not .html it adds header multiple times on button click (aka THIS IS CRAYZBALLS)
+        // this.$el.append(btn);
 
-        var status = app.tasks.at(i).get('status');
-        var assignee = app.tasks.at(i).get('assignee');
+        for(var i = 0; i < app.tasks.length; i++){
 
-        if((status === 'unassigned' || status === '') && assignee === ''){
-          console.log('ive entered the if loop');
-          var viewB = new TaskView({model: app.tasks.at(i)});
-          this.$el.append(viewB.$el);
+          var status = app.tasks.at(i).get('status');
+          var assignee = app.tasks.at(i).get('assignee');
+
+          if((status === 'unassigned' || status === '') && assignee === ''){
+            console.log('ive entered the if loop');
+            var viewB = new TaskView({model: app.tasks.at(i)});
+            this.$el.append(viewB.$el);
+          }
         }
-      }
-    }
-  });
+      },
+      // events: {
+    	// 	'click #newTask' : 'newTask'
+    	// },
+      //
+      // newTask: function () {
+      //   var addTask = new AddTaskView();
+      //   addTask.render();
+      //   this.$el.append(addTask.$el);
+      // }
+    });
 
 
 //=============================================
@@ -258,13 +297,13 @@ var AssignToView = Backbone.View.extend({
   });
 
 
-
-//=============================================
+//
+// =============================================
 // 6. CompletedTasksView :
 //    View for tasks filtered by active user
 //    Called by :
 //      UserView
-//=============================================
+// =============================================
 
   var CompletedTasksView = Backbone.View.extend({
     tagName: 'div',
@@ -332,15 +371,16 @@ var AssignToView = Backbone.View.extend({
       this.$el.prepend( $header );
       this.$el.append($row);
       this.$el.prepend( btn );
-      $('#app').append(this.$el);
+      $('#app').append(this.$el); // TODO: check if this works or not?
 	  },
 
     events: {
-      'click #newTask' : 'newTask'
+      'click #newTask' : 'newTask',
+      'click #logout'  : "logout"
     },
 
     newTask: function () {
-      console.log( 'newTask' )
+      console.log( 'newTask' );
       var addTask = new AddTaskView();
       addTask.render();
       this.$el.append(addTask.$el);
@@ -349,9 +389,9 @@ var AssignToView = Backbone.View.extend({
     initialize : function() {
     },
 
-  	events: {
-  		"click #logout" : "logout"
-  	},
+  	// events: {
+  	// 	"click #logout" : "logout"
+  	// },
 
   	logout: function() {
   		console.log("logging out");
