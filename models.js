@@ -21,7 +21,7 @@ var IssueModel = Backbone.Model.extend({
 
 // IssueModel.fetch();
 var UserCollection = Backbone.Collection.extend({
-	model:UserModel, url: "/tasks"
+	model:UserModel, url: "/users"
 });
 
 var IssueCollection = Backbone.Collection.extend({
