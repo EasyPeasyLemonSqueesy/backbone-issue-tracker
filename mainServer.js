@@ -20,7 +20,7 @@ app.get('/tasks/:id', function (req, res) {
     console.log("counter has been requested");
     console.log(tasks);
 
-    res.send("hello");
+    res.send(tasks);
 });
 app.get('/tasks', function (req, res) {
     console.log("this is the get for /tasks");
@@ -30,17 +30,27 @@ app.get('/tasks', function (req, res) {
 
 app.put('/tasks/:id', function (req, res) {
     console.log("this is a put request");
+    var object = req.body;
+    tasks[count] = object;
+    count = count + 1;
     var id = req.params.id;
     res.send({id: id});
-    console.log(tasks);
+    // console.log(tasks);
 
+});
+
+app.patch('/tasks/:id', function (req,res) {
+  console.log("this is a patch request");
+  var id = req.params.id;
+  res.send({id: id});
+  console.log(tasks);
 });
 app.post('/tasks', function(req,res) {
   var object = req.body;
   tasks[count] = object;
   res.send({id: count});
   count = count + 1;
-  console.log(tasks);
+  console.log('i am changing attributes', tasks);
 });
 
 app.post('/users', function(req,res) {
