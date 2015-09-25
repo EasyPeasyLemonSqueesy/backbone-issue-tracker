@@ -87,10 +87,10 @@ var GUI = (function(){ //IIFE for all Views
       dropdown += '</form>';
       var $complete = $('<button class="btn-complete">').html('complete');
 
-      var task = this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br><br>';
+      var task = '<br>title: ' + this.model.get('title') + '<br>description: ' + this.model.get('description') + '<br>creator: ' + this.model.get('creator') + '<br>assigned to: ' + this.model.get('assignee') + '<br>status: ' + this.model.get('status') + '<br><br>';
 
       this.$el.html(task);
-      this.$el.append([$unclaim, $claim, dropdown, $complete]);
+      if(this.model.get('assignee') === app.currentUser || this.model.get('assignee') === "" && this.model.get('status') !== 'completed'){this.$el.append([$unclaim, $claim, dropdown, $complete]);}
     },
 
     initialize: function(){
@@ -267,7 +267,7 @@ var GUI = (function(){ //IIFE for all Views
       this.$el.html('<h1>Assigned Tasks</h1>');
 
       for(var i = 0; i < app.tasks.length; i++){
-        if(app.tasks.at(i).get('assignee') ){
+        if(app.tasks.at(i).get('assignee') && app.tasks.at(i).get('assignee') !== app.currentUser){
           var viewB = new TaskView({model: app.tasks.at(i)});
           this.$el.append(viewB.$el);
         }
