@@ -19,7 +19,6 @@ app.use(express.static(__dirname));
 app.get('/tasks/:id', function (req, res) {
     console.log("counter has been requested");
     console.log(tasks);
-
     res.send(tasks);
 });
 app.get('/tasks', function (req, res) {
@@ -31,9 +30,8 @@ app.get('/tasks', function (req, res) {
 app.put('/tasks/:id', function (req, res) {
     console.log("this is a put request");
     var object = req.body;
-    tasks[count] = object;
-    count = count + 1;
     var id = req.params.id;
+    tasks[id] = object;
     res.send({id: id});
     // console.log(tasks);
 
@@ -45,6 +43,7 @@ app.patch('/tasks/:id', function (req,res) {
   res.send({id: id});
   console.log(tasks);
 });
+
 app.post('/tasks', function(req,res) {
   var object = req.body;
   tasks[count] = object;

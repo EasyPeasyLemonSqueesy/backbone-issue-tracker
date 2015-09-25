@@ -57,6 +57,7 @@ var GUI = (function(){ //IIFE for all Views
       };
       id = id + 1;
       app.tasks.create( task );
+      this.remove();
       $('#app').removeClass('faded');
     },
   });
@@ -112,7 +113,6 @@ var GUI = (function(){ //IIFE for all Views
     claim : function() {
       this.model.save({ 'assignee' : app.currentUser });
       this.model.save({ 'status' : 'assigned' });
-      this.model.destroy();
     },
     assignTo : function(event) {
       var username = event.target.value;
@@ -191,7 +191,7 @@ var GUI = (function(){ //IIFE for all Views
 
       render: function () {
     		var btn = '<button id="newTask">Create A New Task</button>';
-        var header = '<h1>Unassigned Tasks</h1>';
+        var header = '<h1>Unassigned</h1>';
     		this.$el.append().html(header); // TODO: If not .html it adds header multiple times on button click (aka THIS IS CRAYZBALLS)
         // this.$el.append(btn);
 
@@ -298,7 +298,7 @@ var GUI = (function(){ //IIFE for all Views
 
     render: function () {
       // var usernames = UserModel.model.get("value");
-      this.$el.html('<h1>Completed Tasks</h1>');
+      this.$el.html('<h1>Completed</h1>');
 
       for(var i = 0; i < app.tasks.length; i++){
         if(app.tasks.at(i).get('status') === 'completed' ){
