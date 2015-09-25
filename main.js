@@ -1,12 +1,15 @@
 var app = {};
 
 $(function() { //when DOM is ready...
-	console.log("main is running");
-	app.users = new UserCollection([
-		{username:'Joseph'},
-		{username:'Nathaniel'},
-		{username:'Adam'}
-	]);
+	app.users = new UserCollection(
+	// 	[
+	// 	{username:'Joseph'},
+	// 	{username:'Nathaniel'},
+	// 	{username:'Adam'}
+	// ]
+
+);
+
 
 	app.tasks = new IssueCollection([
 		// {
@@ -44,5 +47,5 @@ $(function() { //when DOM is ready...
 	app.gui = new GUI(app.users,
 						app.tasks,
 						'#app');// selector of main div
-	app.tasks.fetch();
+	// app.tasks.fetch();
 });

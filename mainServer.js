@@ -4,7 +4,13 @@ var bodyParser = require('body-parser');
 
 var app = express();
 var count = 0;
+var counter = 3;
 var tasks = [];
+var users = [
+  {username:'Joseph'},
+  {username:'Nathaniel'},
+  {username:'Adam'}
+];
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -35,6 +41,20 @@ app.post('/tasks', function(req,res) {
   res.send({id: count});
   count = count + 1;
   console.log(tasks);
+});
+
+app.post('/users', function(req,res) {
+  var object = req.body;
+  users[counter] = object;
+  res.send({id: counter});
+  counter = counter + 1;
+  console.log(users);
+});
+
+app.get('/users', function(req,res){
+  console.log('getting users');
+  console.log(users);
+  res.send(users);
 });
 // app.put('/tasks', function (req, res) {
 //
