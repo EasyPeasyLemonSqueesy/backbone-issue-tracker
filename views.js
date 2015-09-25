@@ -1,5 +1,4 @@
 var GUI = (function(){ //IIFE for all Views
-  var id = 0;
 
 //=============================================
 //              TABLE OF CONTENTS
@@ -53,10 +52,13 @@ var GUI = (function(){ //IIFE for all Views
         title : this.$el.find('#title').val(),
         description : this.$el.find('#description').val(),
         creator : app.currentUser,
-        id : id
+        id : app.tasks.length
       };
-      id = id + 1;
+      // app.tasks.fetch({wait:true});
       app.tasks.create( task );
+      app.tasks.fetch({wait:true});
+      id = app.tasks.length;
+      console.log('task length is now ',app.tasks.length);
       this.remove();
       $('#app').removeClass('faded');
     },
@@ -126,58 +128,13 @@ var GUI = (function(){ //IIFE for all Views
     }
 });
 
-// var AssignToView = Backbone.View.extend({
-//   render: function() {
-//     console.log("rendering AssignToView");
-//     var users = app.users.pluck("username");
-//     var dropdown = '<select id = "assignTo" onchange="this.form.submit()">';
-//     users.forEach(function(element){dropdown += "<option>"+element+"</option>";});
-//     dropdown += ('</select>');
-//     var title = '<h1>Assign This Task To A User</h1>';
-//     var all =  title + dropdown;
-//     // this.$el.html(  all );
-//     $('#app').append(all);
-//   },
-//   events: {
-//     'click #assignTo' : 'assignTo'
-//   },
-//   assignTo : function() {
-//     console.log("Button Works!");
-//   }
-// });
 //=============================================
 // 3. UnassignedTasksView:
 //      View for all unassigned
 //    Called by :
 //      UserView
 //=============================================
-//buggy version:
-  // var UnassignedTasksView = Backbone.View.extend({
-  // 	tagName: 'div',
-  // 	className: 'UnassignedTasksView column',
-  //
-  // 	initialize: function () {
-  //     this.listenTo( app.tasks, 'change', this.render);
-  //     this.listenTo( app.tasks, 'update', this.render);
-  //   },
-  //
-  //   render: function () {
-  //     console.log('ive entered the rendering phase');
-  // 		var $h1 = $('<h1>').html('Unassigned Tasks');
-  //     this.$el.append($h1);
-  //     for(var i = 0; i < app.tasks.length; i++){
-  //
-  //       var status = app.tasks.at(i).get('status');
-  //       var assignee = app.tasks.at(i).get('assignee');
-  //
-  //       if((status === 'unassigned' || status === '') && assignee === ''){
-  //         console.log('ive entered the if loop');
-  //         var viewB = new TaskView({model: app.tasks.at(i)});
-  //         this.$el.append(viewB.$el);
-  //       }
-  //     }
-  //   }
-  // });
+
   //working version:
   var UnassignedTasksView = Backbone.View.extend({
     	tagName: 'div',
@@ -205,16 +162,7 @@ var GUI = (function(){ //IIFE for all Views
             this.$el.append(viewB.$el);
           }
         }
-      },
-      // events: {
-    	// 	'click #newTask' : 'newTask'
-    	// },
-      //
-      // newTask: function () {
-      //   var addTask = new AddTaskView();
-      //   addTask.render();
-      //   this.$el.append(addTask.$el);
-      // }
+      }
     });
 
 
@@ -333,6 +281,7 @@ var GUI = (function(){ //IIFE for all Views
     initialize: function () {
       this.listenTo(app.tasks, 'sync', this.hi);
       // app.tasks.on('sync', this.hi);
+      app.tasks.fetch();
       },
   	render: function() {
 			var $header   = $('<div id="greeting">');
@@ -370,7 +319,7 @@ var GUI = (function(){ //IIFE for all Views
     },
     events: {
       'click #newTask' : 'newTask',
-      'click #logout'  : "display"
+      'click #logout'  : "logout"
     },
     display: function() {
       console.log("you are clicking logout");
@@ -422,6 +371,7 @@ var LoginView = Backbone.View.extend({
 		this.listenTo(app.users, "sync", this.render);
     this.listenTo(app.users, 'change', this.render);
     app.users.fetch();
+    app.tasks.fetch();
     // app.users.invoke('save');
     this.render();
 	},
@@ -432,9 +382,9 @@ var LoginView = Backbone.View.extend({
   },
 	events: {
 		"click #logout" : "logout",
-		// "click #login" : "login",
+		"click #login" : "login",
     'click #submit' : "newUser",
-    'click #login' : 'display'
+    // 'click #login' : 'display'
 	},
 	login: function() {
 		app.currentUser = $('#dropdown').val();

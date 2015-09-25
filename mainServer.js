@@ -3,8 +3,8 @@ var express = require('express');
 var bodyParser = require('body-parser');
 
 var app = express();
-var count = 0;
-var counter = 3;
+// var count = 0;
+// var counter = 3;
 var tasks = [];
 var users = [
   {username:'Joseph'},
@@ -46,17 +46,18 @@ app.patch('/tasks/:id', function (req,res) {
 
 app.post('/tasks', function(req,res) {
   var object = req.body;
-  tasks[count] = object;
-  res.send({id: count});
-  count = count + 1;
+  var length = tasks.length;
+  tasks[length] = object;
+  res.send({id: length});
+  // count = count + 1;
   console.log('i am changing attributes', tasks);
 });
 
 app.post('/users', function(req,res) {
   var object = req.body;
-  users[counter] = object;
-  res.send({id: counter});
-  counter = counter + 1;
+  length = users.length;
+  users[length] = object;
+  res.send({id: length});
   console.log(users);
 });
 
