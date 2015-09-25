@@ -12,7 +12,7 @@ var IssueModel = Backbone.Model.extend({
 		description:'',
 		creator:'',
 		assignee:'',
-		status:'unassigned',
+		status:'unassigned'
 	},
 	// ur : "/tasks"
 

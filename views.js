@@ -1,4 +1,5 @@
 var GUI = (function(){ //IIFE for all Views
+  var id = 0;
 
 //=============================================
 //              TABLE OF CONTENTS
@@ -48,14 +49,15 @@ var GUI = (function(){ //IIFE for all Views
 
     addTask : function(event) {
       event.preventDefault();
-
       var task = {
         title : this.$el.find('#title').val(),
         description : this.$el.find('#description').val(),
-        creator : app.currentUser
+        creator : app.currentUser,
+        id : id
       };
-
+      id = id + 1;
       app.tasks.create( task );
+      this.remove();
       $('#app').removeClass('faded');
     },
   });
@@ -104,36 +106,23 @@ var GUI = (function(){ //IIFE for all Views
     },
 
     unclaim : function() {
-      //console.log( 'unclaiming a task' );
-      this.model.set({ 'assignee' : '' });
-      this.model.set({ 'status' : 'unassigned' });
-
-      // console.log( this.model );
-      // console.log( 'the new assignee is: ', this.model.get('assignee') );
-      // console.log( 'the new status is: ', this.model.get('status') );
+      this.model.save({ 'assignee' : '' });
+      this.model.save({ 'status' : 'unassigned' });
     },
 
     claim : function() {
-      //console.log( 'claiming a task' );
-      this.model.set({ 'assignee' : app.currentUser });
-      this.model.set({ 'status' : 'assigned' });
-      // console.log( 'the new assignee is: ', this.model.get('assignee') );
-      // console.log( 'the new status is: ', this.model.get('status') );
+      this.model.save({ 'assignee' : app.currentUser });
+      this.model.save({ 'status' : 'assigned' });
     },
     assignTo : function(event) {
-      console.log("I'm assigning a task!");
       var username = event.target.value;
-      console.log('assigning to',username);
-      this.model.set({ 'assignee' : username });
-      this.model.set({ 'status' : 'assigned'});
+      this.model.save({ 'assignee' : username });
+      this.model.save({ 'status' : 'assigned'});
     },
 
     complete : function (){
-      //console.log( 'complete a task' );
-      this.model.set({ 'assignee' : '' });
-      this.model.set({ 'status' : 'completed' });
-      // console.log( 'the new assignee is: ', this.model.get('assignee') );
-      // console.log( 'the new status is: ', this.model.get('status') );
+      this.model.save({ 'assignee' : '' });
+      this.model.save({ 'status' : 'completed' });
     }
 });
 
@@ -201,9 +190,8 @@ var GUI = (function(){ //IIFE for all Views
       },
 
       render: function () {
-        console.log('ive entered the rendering phase');
     		var btn = '<button id="newTask">Create A New Task</button>';
-        var header = '<h1>Unassigned Tasks</h1>';
+        var header = '<h1>Unassigned</h1>';
     		this.$el.append().html(header); // TODO: If not .html it adds header multiple times on button click (aka THIS IS CRAYZBALLS)
         // this.$el.append(btn);
 
@@ -213,7 +201,6 @@ var GUI = (function(){ //IIFE for all Views
           var assignee = app.tasks.at(i).get('assignee');
 
           if((status === 'unassigned' || status === '') && assignee === ''){
-            console.log('ive entered the if loop');
             var viewB = new TaskView({model: app.tasks.at(i)});
             this.$el.append(viewB.$el);
           }
@@ -244,7 +231,6 @@ var GUI = (function(){ //IIFE for all Views
 
   	render: function () {
 			// var usernames = UserModel.model.get("value");
-      console.log('UserTasksView');
 			this.$el.html('<h1>My Tasks</h1>');
 
       for(var i = 0; i < app.tasks.length; i++){
@@ -278,7 +264,6 @@ var GUI = (function(){ //IIFE for all Views
 
     render: function () {
       // var usernames = UserModel.model.get("value");
-      console.log('AssignedTasksView');
       this.$el.html('<h1>Assigned Tasks</h1>');
 
       for(var i = 0; i < app.tasks.length; i++){
@@ -313,8 +298,7 @@ var GUI = (function(){ //IIFE for all Views
 
     render: function () {
       // var usernames = UserModel.model.get("value");
-      console.log('CompletedTasksView');
-      this.$el.html('<h1>Completed Tasks</h1>');
+      this.$el.html('<h1>Completed</h1>');
 
       for(var i = 0; i < app.tasks.length; i++){
         if(app.tasks.at(i).get('status') === 'completed' ){
@@ -347,7 +331,6 @@ var GUI = (function(){ //IIFE for all Views
   var UserView = Backbone.View.extend({
     id : 'UserView',
     initialize: function () {
-      console.log(app.tasks);
       this.listenTo(app.tasks, 'sync', this.hi);
       // app.tasks.on('sync', this.hi);
       },
@@ -383,7 +366,7 @@ var GUI = (function(){ //IIFE for all Views
       $('#app').append(this.$el); // TODO: check if this works or not?
 	  },
     hi: function() {
-      console.log("you have successfully listened to a sync event");
+      // console.log("you have successfully listened to a sync event");
     },
     events: {
       'click #newTask' : 'newTask',
@@ -391,14 +374,12 @@ var GUI = (function(){ //IIFE for all Views
     },
 
     newTask: function () {
-      console.log( 'newTask' );
       var addTask = new AddTaskView();
       addTask.render();
       this.$el.append(addTask.$el);
     },
 
   	logout: function() {
-  		console.log("logging out");
   		// this.$el.empty();
       $('#app').html('');
   		app.gui.switchToLogin();
@@ -420,7 +401,7 @@ var LoginView = Backbone.View.extend({
 		var button = '<button id = "login">Login</button>';
     // app.users.fetch();
 		var users = app.users.pluck("username");
-    console.log('client sees these users',app.users);
+    // console.log('client sees these users',app.users);
 		var dropdown = '<select id = "dropdown">';
     users.forEach(function(element){dropdown += "<option>"+element+"</option>";});
 		dropdown += ('</select>');
@@ -434,17 +415,14 @@ var LoginView = Backbone.View.extend({
 			this.$el.html('');
 	},
 	initialize: function() {
-		console.log("initializing");
 		this.listenTo(app.users, "sync", this.render);
     this.listenTo(app.users, 'change', this.render);
     app.users.fetch();
     // app.users.invoke('save');
     this.render();
-    console.log('users on initialize',app.users);
-
 	},
   hi : function() {
-    console.log("hello you heard a sync event");
+    // console.log("hello you heard a sync event");
   },
 	events: {
 		"click #logout" : "logout",
@@ -453,12 +431,10 @@ var LoginView = Backbone.View.extend({
 	},
 	login: function() {
 		app.currentUser = $('#dropdown').val();
-		console.log("loging in");
     this.remove();
 			app.gui.switchToUser();
 	},
 	logout: function() {
-		console.log("logging out");
 		this.$el.empty();
 		this.remove();
 		app.gui.switchToLogin();
@@ -466,7 +442,6 @@ var LoginView = Backbone.View.extend({
   newUser : function (event) {
     event.preventDefault();
     var username = $('#input').val();
-    console.log(username);
     // app.users.fetch();
     app.users.create({username: username });
     // app.users.save();
