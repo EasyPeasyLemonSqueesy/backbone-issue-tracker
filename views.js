@@ -55,9 +55,10 @@ var GUI = (function(){ //IIFE for all Views
         creator : app.currentUser
       };
 
-      app.tasks.add( task );
+      app.tasks.create( task );
+      // app.tasks.save();
       $('#app').removeClass('faded');
-    }
+    },
   });
 
 
@@ -75,7 +76,6 @@ var GUI = (function(){ //IIFE for all Views
     className: 'task',
 
     render: function(){
-
       var $unclaim  = $('<button class="btn-unclaim">').html('unclaim');
       var $claim    = $('<button class="btn-claim">').html('claim');
       // var $assign   = $('<select class="btn-assign" onchange="this.form.submit()">').html('Assign To User');
@@ -198,6 +198,7 @@ var GUI = (function(){ //IIFE for all Views
     	initialize: function () {
         this.listenTo( app.tasks, 'change', this.render);
         this.listenTo( app.tasks, 'update', this.render);
+        app.tasks.fetch();
       },
 
       render: function () {
@@ -258,6 +259,7 @@ var GUI = (function(){ //IIFE for all Views
   	initialize: function () {
       this.listenTo(app.tasks, 'change', this.render);
       this.listenTo(app.tasks, 'update', this.render);
+      app.tasks.fetch();
   	},
   	events : {
   	},
@@ -291,6 +293,7 @@ var GUI = (function(){ //IIFE for all Views
     initialize: function () {
       this.listenTo(app.tasks, 'change', this.render);
       this.listenTo(app.tasks, 'update', this.render);
+      app.tasks.fetch();
     },
     events : {
     },
@@ -325,6 +328,8 @@ var GUI = (function(){ //IIFE for all Views
     initialize: function () {
       this.listenTo(app.tasks, 'change', this.render);
       this.listenTo(app.tasks, 'update', this.render);
+      app.tasks.fetch();
+
     },
 
     events : {
@@ -342,8 +347,13 @@ var GUI = (function(){ //IIFE for all Views
 
   var UserView = Backbone.View.extend({
     id : 'UserView',
+    initialize: function () {
+      console.log(app.tasks);
+      this.listenTo(app.tasks, 'sync', this.hi);
+      // app.tasks.on('sync', this.hi);
+      },
   	render: function() {
-			var $header   = $('<div id="greeting">')
+			var $header   = $('<div id="greeting">');
       var greeting = '<h1>Welcome, '+ app.currentUser + '!</h1>';
       var logout   = '<button id = "logout">Log-Out</button>';
       var btn = '<button id="newTask">Create A New Task</button>';
@@ -373,7 +383,9 @@ var GUI = (function(){ //IIFE for all Views
       this.$el.prepend( btn );
       $('#app').append(this.$el); // TODO: check if this works or not?
 	  },
-
+    hi: function() {
+      console.log("you have successfully listened to a sync event");
+    },
     events: {
       'click #newTask' : 'newTask',
       'click #logout'  : "logout"
@@ -385,13 +397,6 @@ var GUI = (function(){ //IIFE for all Views
       addTask.render();
       this.$el.append(addTask.$el);
     },
-
-    initialize : function() {
-    },
-
-  	// events: {
-  	// 	"click #logout" : "logout"
-  	// },
 
   	logout: function() {
   		console.log("logging out");
@@ -427,9 +432,12 @@ var LoginView = Backbone.View.extend({
 	},
 	initialize: function() {
 		console.log("initializing");
-		// this.on("logout", this.delete, this);
+		this.listenTo(app.tasks, "sync", this.hi);
 
 	},
+  hi : function() {
+    console.log("hello you heard a sync event");
+  },
 	events: {
 		"click #logout" : "logout",
 		"click #login" : "login"
