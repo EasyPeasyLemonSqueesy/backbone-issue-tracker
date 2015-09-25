@@ -2,6 +2,7 @@ var UserModel = Backbone.Model.extend({
 	defaults: {
 		username:''
 	},
+	// url : "/tasks",
 	currentUser : ''
 });
 
@@ -12,14 +13,17 @@ var IssueModel = Backbone.Model.extend({
 		creator:'',
 		assignee:'',
 		status:'unassigned',
-	}
+	},
+	// ur : "/tasks"
+
 	// Add methods if needed...
 });
 
+// IssueModel.fetch();
 var UserCollection = Backbone.Collection.extend({
-	model:UserModel
+	model:UserModel, url: "/tasks"
 });
 
 var IssueCollection = Backbone.Collection.extend({
-	model:IssueModel
+	model:IssueModel, url: "/tasks"
 });
