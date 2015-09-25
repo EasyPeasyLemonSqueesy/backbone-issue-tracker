@@ -48,4 +48,43 @@ $(function() { //when DOM is ready...
 						app.tasks,
 						'#app');// selector of main div
 	// app.tasks.fetch();
+	app.Router = Backbone.Router.extend({
+			routes: {
+				// '*filter' : 'setFilter',
+				'' : 'index',
+				'loggedin' : 'loggedin',
+				'loggedout' : 'loggedout',
+				'users' : 'users',
+				'show/:id' : 'show'
+			},
+			index : function() {
+				console.log("you are on the main page");
+				// app.gui.switchToLogin();
+			},
+			setFilter: function(params) {
+				console.log('app.router.params = ' + params); // just for didactical purposes.
+				// window.filter = params.trim() || '';
+				// app.todoList.trigger('reset');
+			},
+			loggedin: function() {
+				console.log('you are in login ');
+				app.currentUser = $('#dropdown').val();
+				// .remove();
+					app.gui.switchToUser();
+			},
+			loggedout: function() {
+				console.log('you are logging out');
+				app.gui.switchToLogin();
+			},
+			users : function() {
+				console.log('you are in users');
+				var users = new IssueCollection();
+				users.fetch();
+			},
+			show: function(id){
+			$(document.body).append("Show route has been called.. id = ", id);
+		}
+		});
+	    app.router = new app.Router();
+	    Backbone.history.start();
 });

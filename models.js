@@ -27,3 +27,11 @@ var UserCollection = Backbone.Collection.extend({
 var IssueCollection = Backbone.Collection.extend({
 	model:IssueModel, url: "/tasks"
 });
+
+
+
+	//--------------
+	 // Initializers
+	 //--------------
+
+		// 	app.appView = new app.AppView();

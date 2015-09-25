@@ -370,9 +370,13 @@ var GUI = (function(){ //IIFE for all Views
     },
     events: {
       'click #newTask' : 'newTask',
-      'click #logout'  : "logout"
+      'click #logout'  : "display"
     },
-
+    display: function() {
+      console.log("you are clicking logout");
+       app.router.navigate('loggedout', true);
+       this.remove();
+    },
     newTask: function () {
       var addTask = new AddTaskView();
       addTask.render();
@@ -421,13 +425,16 @@ var LoginView = Backbone.View.extend({
     // app.users.invoke('save');
     this.render();
 	},
-  hi : function() {
-    // console.log("hello you heard a sync event");
+  display : function() {
+    console.log("you are clicking login");
+     app.router.navigate('loggedin', true);
+     this.remove();
   },
 	events: {
 		"click #logout" : "logout",
-		"click #login" : "login",
-    'click #submit' : "newUser"
+		// "click #login" : "login",
+    'click #submit' : "newUser",
+    'click #login' : 'display'
 	},
 	login: function() {
 		app.currentUser = $('#dropdown').val();
