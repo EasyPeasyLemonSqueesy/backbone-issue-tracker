@@ -397,6 +397,7 @@ var LoginView = Backbone.View.extend({
 		app.gui.switchToLogin();
 	},
   newUser : function (event) {
+    console.log('newUser event triggered');
     event.preventDefault();
     var username = $('#input').val();
     // app.users.fetch();
