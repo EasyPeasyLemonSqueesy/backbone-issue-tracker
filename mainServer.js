@@ -1,12 +1,18 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
+//Nate's
 var db = require('orchestrate')('e12dde45-d9d1-40dc-b7cc-185b1b716f7f');
+
+// //Mine
+// var db = require('orchestrate')('ccbb65c6-d9ab-4d26-9691-c38d21fe2fc6');
+
 
 var app = express();
 // var count = 0;
 // var counter = 3;
-var tasks = [];
+
+// var tasks = [];
 
 
 app.use(bodyParser.json());
@@ -18,31 +24,40 @@ app.use(express.static(__dirname));
 //     console.log(tasks);
 //     res.send(tasks);
 // });
+
+
+
+//------------------*Done*----------------------
 app.get('/tasks', function (req, res) {
     console.log("this is the first thing");
-    console.log(tasks);
-    res.send(tasks);
-  // db.list('users').then(function(result){
-  //   console.log("list is running:");
-  //   var resultBody = result.body.results;
-  //   resultBody.map(function(element, index, array){
-  //     console.log(element.value);
-  //     arr.push(element.value);
-  //   });
-  //   console.log("This is arr:", arr);
-  //   res.send(arr);
-  // });
+
+    db.list('tasks')
+    .then(function (result){
+      var tasks = [];
+      var resultBody = result.body.results;
+      resultBody.map(function(element, index, array) {
+        tasks.push(element.value);
+      });
+      res.send(tasks);
+    });
 });
 
+
+//------------------*Done*----------------------
 app.put('/tasks/:id', function (req, res) {
-    console.log("this is a put request");
-    var object = req.body;
-    var id = req.params.id;
-    tasks[id] = object;
-    res.send({id: id});
-    // console.log(tasks);
-
+  console.log("this is a put request");
+  var object = req.body;
+  object.id = Date();
+  console.log(object);
+  db.post('tasks', object)
+  .then(function (result) {
+    res.send(object);
+  })
+  .fail(function (err) {
+    console.log(err);
+  });
 });
+
 
 app.patch('/tasks/:id', function (req,res) {
   console.log("this is a patch request");
@@ -50,6 +65,8 @@ app.patch('/tasks/:id', function (req,res) {
   res.send({id: id});
   console.log(tasks);
 });
+
+
 
 app.post('/tasks', function(req,res) {
   var object = req.body;
@@ -82,7 +99,6 @@ app.post('/users', function(req,res) {
     });
 
   });
-  users = newArr;
   console.log('This is users', users);
   console.log('This is newArr', newArr);
 });
