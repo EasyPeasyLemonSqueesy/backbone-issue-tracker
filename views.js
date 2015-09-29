@@ -52,12 +52,12 @@ var GUI = (function(){ //IIFE for all Views
         title : this.$el.find('#title').val(),
         description : this.$el.find('#description').val(),
         creator : app.currentUser,
-        id : app.tasks.length
+        // id : app.tasks.length
       };
       // app.tasks.fetch({wait:true});
       app.tasks.create( task );
       app.tasks.fetch({wait:true});
-      id = app.tasks.length;
+      // id = app.tasks.length;
       console.log('task length is now ',app.tasks.length);
       this.remove();
       $('#app').removeClass('faded');
@@ -368,8 +368,8 @@ var LoginView = Backbone.View.extend({
 			this.$el.html('');
 	},
 	initialize: function() {
-		this.listenTo(app.users, "sync", this.render);
-    this.listenTo(app.users, 'change', this.render);
+		this.listenTo(app.users, "update", this.render);
+    // this.listenTo(app.users, 'change', this.render);
     app.users.fetch();
     app.tasks.fetch();
     // app.users.invoke('save');

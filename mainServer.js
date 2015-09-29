@@ -42,14 +42,13 @@ app.get('/tasks', function (req, res) {
     });
 });
 
-
 //------------------*Done*----------------------
 app.put('/tasks/:id', function (req, res) {
-  console.log("this is a put request");
+  console.log("this is a put request to /tasks/:id");
   var object = req.body;
-  object.id = Date();
+  // object.id = Date();
   console.log(object);
-  db.post('tasks', object)
+  db.put('tasks', object.id, object)
   .then(function (result) {
     res.send(object);
   })
@@ -57,6 +56,7 @@ app.put('/tasks/:id', function (req, res) {
     console.log(err);
   });
 });
+
 
 
 app.patch('/tasks/:id', function (req,res) {
@@ -71,11 +71,14 @@ app.patch('/tasks/:id', function (req,res) {
 app.post('/tasks', function(req,res) {
   console.log('app.post /task');
   var object = req.body;
-  var length = tasks.length;
-  tasks[length] = object;
-  res.send({id: length});
-  // count = count + 1;
-  console.log('i am changing attributes', tasks);
+  object.id = Date();
+  db.put('tasks', object.id, object)
+  .then(function (result) {
+    res.send(object);
+  })
+  .fail(function (err) {
+    console.log("failed");
+  });
 });
 
 
@@ -135,9 +138,3 @@ app.listen(3000, function () {
 
     console.log("server started");
 });
-
-
-var reset = function(){
-
-  console.log("I'm reseting");
-};
