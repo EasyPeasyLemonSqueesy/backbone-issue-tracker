@@ -1,63 +1,41 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
-//Nate's
-var db = require('orchestrate')('e12dde45-d9d1-40dc-b7cc-185b1b716f7f');
-
-// //Mine
-// var db = require('orchestrate')('ccbb65c6-d9ab-4d26-9691-c38d21fe2fc6');
-
 
 var app = express();
 // var count = 0;
 // var counter = 3;
-
-// var tasks = [];
-
+var tasks = [];
+var users = [
+  {username:'Joseph'},
+  {username:'Nathaniel'},
+  {username:'Adam'}
+];
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(__dirname));
 
-// app.get('/tasks/:id', function (req, res) {
-//     console.log("counter has been requested");
-//     console.log(tasks);
-//     res.send(tasks);
-// });
-
-
-
-//------------------*Done*----------------------
+app.get('/tasks/:id', function (req, res) {
+    console.log("counter has been requested");
+    console.log(tasks);
+    res.send(tasks);
+});
 app.get('/tasks', function (req, res) {
-    console.log("app.get/tasks");
-
-    db.list('tasks')
-    .then(function (result){
-      var tasks = [];
-      var resultBody = result.body.results;
-      resultBody.map(function(element, index, array) {
-        tasks.push(element.value);
-      });
-      res.send(tasks);
-    });
+    console.log("this is the get for /tasks");
+    console.log(tasks);
+    res.send(tasks);
 });
 
-
-//------------------*Done*----------------------
 app.put('/tasks/:id', function (req, res) {
-  console.log("this is a put request");
-  var object = req.body;
-  object.id = Date();
-  console.log(object);
-  db.post('tasks', object)
-  .then(function (result) {
-    res.send(object);
-  })
-  .fail(function (err) {
-    console.log(err);
-  });
-});
+    console.log("this is a put request");
+    var object = req.body;
+    var id = req.params.id;
+    tasks[id] = object;
+    res.send({id: id});
+    // console.log(tasks);
 
+});
 
 app.patch('/tasks/:id', function (req,res) {
   console.log("this is a patch request");
@@ -66,10 +44,7 @@ app.patch('/tasks/:id', function (req,res) {
   console.log(tasks);
 });
 
-
-
 app.post('/tasks', function(req,res) {
-  console.log('app.post /task');
   var object = req.body;
   var length = tasks.length;
   tasks[length] = object;
@@ -78,38 +53,18 @@ app.post('/tasks', function(req,res) {
   console.log('i am changing attributes', tasks);
 });
 
-
 app.post('/users', function(req,res) {
-  var newArr = [];
-
-  console.log("this is app.post/users");
-
-  db.post('users', {
-    'username': req.body.username,
-  })
-  .then(function (result) {
-    db.list('users')
-    .then(function (result) {
-      result.body.results.forEach(function(element, index, array){
-      newArr.push(element.value);
-    }).fail(function(error){console.log(error);});
-    });
-
-  });
-
+  var object = req.body;
+  length = users.length;
+  users[length] = object;
+  res.send({id: length});
+  console.log(users);
 });
 
 app.get('/users', function(req,res){
-  var arr = [];
-  db.list('users').then(function(result){
-    console.log("list is running:");
-    var resultBody = result.body.results;
-    resultBody.map(function(element, index, array){
-    console.log(element.value);
-    arr.push(element.value);
-    });
-    res.send(arr);
-  });
+  console.log('getting users');
+  console.log(users);
+  res.send(users);
 });
 // app.put('/tasks', function (req, res) {
 //
@@ -132,12 +87,5 @@ app.get('/users', function(req,res){
 //     res.send({id: '2'});
 // });
 app.listen(3000, function () {
-
     console.log("server started");
 });
-
-
-var reset = function(){
-
-  console.log("I'm reseting");
-};
