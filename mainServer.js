@@ -29,7 +29,7 @@ app.use(express.static(__dirname));
 
 //------------------*Done*----------------------
 app.get('/tasks', function (req, res) {
-    console.log("this is the first thing");
+    console.log("app.get/tasks");
 
     db.list('tasks')
     .then(function (result){
@@ -69,6 +69,7 @@ app.patch('/tasks/:id', function (req,res) {
 
 
 app.post('/tasks', function(req,res) {
+  console.log('app.post /task');
   var object = req.body;
   var length = tasks.length;
   tasks[length] = object;
@@ -80,12 +81,8 @@ app.post('/tasks', function(req,res) {
 
 app.post('/users', function(req,res) {
   var newArr = [];
-  //
-  // var object = req.body;
-  // length = users.length;
-  // users[length] = object;
-  // res.send({id: length});
-  console.log("this is app.post/users", users);
+
+  console.log("this is app.post/users");
 
   db.post('users', {
     'username': req.body.username,
@@ -99,12 +96,10 @@ app.post('/users', function(req,res) {
     });
 
   });
-  console.log('This is users', users);
-  console.log('This is newArr', newArr);
+
 });
 
 app.get('/users', function(req,res){
-  console.log('getting users');
   var arr = [];
   db.list('users').then(function(result){
     console.log("list is running:");
@@ -113,7 +108,6 @@ app.get('/users', function(req,res){
     console.log(element.value);
     arr.push(element.value);
     });
-    console.log("This is arr:", arr);
     res.send(arr);
   });
 });
@@ -141,3 +135,9 @@ app.listen(3000, function () {
 
     console.log("server started");
 });
+
+
+var reset = function(){
+
+  console.log("I'm reseting");
+};
