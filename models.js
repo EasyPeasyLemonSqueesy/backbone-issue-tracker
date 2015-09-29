@@ -6,6 +6,7 @@ var UserModel = Backbone.Model.extend({
 	currentUser : ''
 });
 
+
 var IssueModel = Backbone.Model.extend({
 	defaults: {
 		title:'',

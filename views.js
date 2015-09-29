@@ -52,12 +52,8 @@ var GUI = (function(){ //IIFE for all Views
         title : this.$el.find('#title').val(),
         description : this.$el.find('#description').val(),
         creator : app.currentUser,
-        // id : app.tasks.length
       };
-      // app.tasks.fetch({wait:true});
       app.tasks.create( task );
-      app.tasks.fetch({wait:true});
-      // id = app.tasks.length;
       console.log('task length is now ',app.tasks.length);
       this.remove();
       $('#app').removeClass('faded');
@@ -108,23 +104,19 @@ var GUI = (function(){ //IIFE for all Views
     },
 
     unclaim : function() {
-      this.model.save({ 'assignee' : '' });
-      this.model.save({ 'status' : 'unassigned' });
+      this.model.save({ 'assignee' : '' , 'status': 'unassigned'});
     },
 
     claim : function() {
-      this.model.save({ 'assignee' : app.currentUser });
-      this.model.save({ 'status' : 'assigned' });
+      this.model.save({ 'assignee' : app.currentUser, 'status' : 'assigned' });
     },
     assignTo : function(event) {
       var username = event.target.value;
-      this.model.save({ 'assignee' : username });
-      this.model.save({ 'status' : 'assigned'});
+      this.model.save({ 'assignee' : username, 'status' : 'assigned' });
     },
 
     complete : function (){
-      this.model.save({ 'assignee' : '' });
-      this.model.save({ 'status' : 'completed' });
+      this.model.save({ 'assignee' : '', 'status' : 'completed'  });
     }
 });
 
@@ -142,11 +134,12 @@ var GUI = (function(){ //IIFE for all Views
 
     	initialize: function () {
         this.listenTo( app.tasks, 'change', this.render);
-        this.listenTo( app.tasks, 'update', this.render);
+        // this.listenTo( app.tasks, 'update', this.render);
         app.tasks.fetch();
       },
 
       render: function () {
+        console.log("unassignedTask RENDERING!!!!!!");
     		var btn = '<button id="newTask">Create A New Task</button>';
         var header = '<h1>Unassigned</h1>';
     		this.$el.append().html(header); // TODO: If not .html it adds header multiple times on button click (aka THIS IS CRAYZBALLS)
@@ -155,9 +148,9 @@ var GUI = (function(){ //IIFE for all Views
         for(var i = 0; i < app.tasks.length; i++){
 
           var status = app.tasks.at(i).get('status');
-          var assignee = app.tasks.at(i).get('assignee');
+          // var assignee = app.tasks.at(i).get('assignee');
 
-          if((status === 'unassigned' || status === '') && assignee === ''){
+          if(status === 'unassigned' || status === '') {
             var viewB = new TaskView({model: app.tasks.at(i)});
             this.$el.append(viewB.$el);
           }
@@ -293,6 +286,7 @@ var GUI = (function(){ //IIFE for all Views
 			var $row     = $('<div id="row">');
 
 			var userTasksView = new UserTasksView();
+      app.userTasksView = userTasksView;
 			userTasksView.render();
 
 			var unassignedTasksView = new UnassignedTasksView();
